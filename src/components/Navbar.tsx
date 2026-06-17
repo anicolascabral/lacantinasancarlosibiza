@@ -15,7 +15,10 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const fg = scrolled ? "var(--ink)" : "var(--paper)";
+  // While the dark overlay menu is open, keep controls light & header transparent
+  // so the close (X) and labels stay visible even after scrolling.
+  const fg = menuOpen ? "var(--paper)" : scrolled ? "var(--ink)" : "var(--paper)";
+  const solid = scrolled && !menuOpen;
 
   const LangToggle = ({ color }: { color: string }) => (
     <div className="flex items-center gap-1.5 text-xs font-body font-bold" style={{ color, letterSpacing: "0.1em" }}>
@@ -39,18 +42,18 @@ export default function Navbar() {
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
-        backgroundColor: scrolled ? "rgba(236,229,214,0.92)" : "transparent",
-        backdropFilter: scrolled ? "blur(10px)" : "none",
-        borderBottom: scrolled ? "1px solid var(--line)" : "1px solid transparent",
+        backgroundColor: solid ? "rgba(236,229,214,0.92)" : "transparent",
+        backdropFilter: solid ? "blur(10px)" : "none",
+        borderBottom: solid ? "1px solid var(--line)" : "1px solid transparent",
       }}
     >
       {/* Thin announcement bar — collapses on scroll */}
       <div
         className="overflow-hidden transition-all duration-500"
         style={{
-          maxHeight: scrolled ? 0 : 40,
-          opacity: scrolled ? 0 : 1,
-          borderBottom: scrolled ? "none" : "1px solid rgba(243,238,227,0.18)",
+          maxHeight: scrolled || menuOpen ? 0 : 40,
+          opacity: scrolled || menuOpen ? 0 : 1,
+          borderBottom: scrolled || menuOpen ? "none" : "1px solid rgba(243,238,227,0.18)",
         }}
       >
         <div className="flex items-center justify-center gap-3 py-2.5 px-6">
@@ -82,7 +85,7 @@ export default function Navbar() {
             href="#"
             aria-label="La Cantina de San Carlos"
             className="transition-opacity duration-300"
-            style={{ opacity: scrolled ? 1 : 0, pointerEvents: scrolled ? "auto" : "none" }}
+            style={{ opacity: solid ? 1 : 0, pointerEvents: solid ? "auto" : "none" }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/images/logo-mark-black.png" alt="La Cantina de San Carlos" className="object-contain" style={{ height: "44px" }} />
