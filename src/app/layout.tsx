@@ -2,8 +2,17 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LangProvider } from "@/lib/i18n";
 
+// Resolve the canonical site URL so the OG image is always a live, fetchable
+// absolute URL (WhatsApp/Facebook need that). Uses Vercel's production URL when
+// the custom domain isn't connected yet.
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "https://www.lacantinasancarlosibiza.com");
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.lacantinasancarlosibiza.com"),
+  metadataBase: new URL(siteUrl),
   title: "La Cantina de San Carlos — Ibiza",
   description:
     "Cocina de fuego en el corazón de San Carlos, Ibiza. Horno de barro artesanal alimentado con leña, ingredientes frescos y tradición mediterránea.",
