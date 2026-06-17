@@ -1,26 +1,319 @@
 @import "tailwindcss";
 
+/* Display — Clash Display (self-hosted) */
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/fonts/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/fonts/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/fonts/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* Body — Satoshi (self-hosted) */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/KFIAZD4RUMEZIYV6FQ3T3GP5PDBDB6JY.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/7AHDUZ4A7LFLVFUIFSARGIWCRQJHISQP.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/GHM6WVH6MILNYOOCXHXB5GTSGNTMGXZR.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/J64QX5IPOHK56I2KYUNBQ5M2XWZEYKYX.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+/* Script accent — Leander (brush, from brand kit) */
+@font-face {
+  font-family: 'Leander';
+  src: url('/fonts/Leander.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* La Cantina brand — strictly black & white over warm paper.
+     Colour comes from photography, never from the UI. */
+  --paper: #ECE5D6;     /* warm cream paper (matches Instagram) */
+  --paper-2: #F3EEE3;   /* lighter cream */
+  --white: #FBF9F4;     /* off-white */
+  --ink: #181613;       /* near-black ink */
+  --ink-soft: #4A453E;  /* softer body text on light */
+  --muted: #8C857A;     /* muted captions */
+  --line: rgba(24,22,19,0.14);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: 'Satoshi', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: 'Clash Display', 'Helvetica Neue', sans-serif;
+  font-weight: 600;
+}
+
+.font-body {
+  font-family: 'Satoshi', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.font-script {
+  font-family: 'Leander', 'Brush Script MT', cursive;
+}
+
+.text-ink { color: var(--ink); }
+.text-muted { color: var(--muted); }
+.bg-ink { background-color: var(--ink); }
+.bg-paper { background-color: var(--paper); }
+
+/* Headline utility — Savaro-style huge uppercase */
+.headline {
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
+.script-label {
+  font-family: 'Leander', cursive;
+  color: var(--ink);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 1;
+}
+
+/* Reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Marquee for footer */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Hero cinematic entrance */
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(26px) scale(0.985); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+.hero-in {
+  opacity: 0;
+  animation: heroIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Slow Ken Burns zoom on hero background */
+@keyframes kenburns {
+  from { transform: scale(1.06); }
+  to   { transform: scale(1.20); }
+}
+.kenburns { animation: kenburns 24s ease-out forwards; }
+
+/* ===== Living fire (pure CSS — no video, negligible bandwidth) ===== */
+
+/* Firelight glow that flickers like flames lighting the scene */
+@keyframes glowFlicker {
+  0%   { opacity: 0.55; transform: scale(1) translateY(0); }
+  15%  { opacity: 0.78; transform: scale(1.03) translateY(-1%); }
+  28%  { opacity: 0.5; transform: scale(0.99); }
+  42%  { opacity: 0.82; transform: scale(1.05) translateY(-1.5%); }
+  55%  { opacity: 0.6; transform: scale(1.01); }
+  70%  { opacity: 0.9; transform: scale(1.06) translateY(-1%); }
+  83%  { opacity: 0.52; transform: scale(0.98); }
+  100% { opacity: 0.7; transform: scale(1.02); }
+}
+.fire-glow {
+  position: absolute;
+  left: 50%;
+  bottom: -10%;
+  width: 90%;
+  height: 75%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 100%,
+    rgba(255,150,60,0.45) 0%,
+    rgba(220,90,30,0.28) 28%,
+    rgba(150,50,15,0.12) 48%,
+    transparent 70%);
+  mix-blend-mode: screen;
+  filter: blur(8px);
+  animation: glowFlicker 4.2s ease-in-out infinite;
+}
+
+/* A subtle secondary flicker, offset, for organic movement */
+.fire-glow--2 {
+  width: 60%;
+  height: 55%;
+  animation-duration: 2.7s;
+  animation-direction: alternate;
+  opacity: 0.6;
+}
+
+/* Rising embers / sparks */
+@keyframes emberRise {
+  0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  8%   { opacity: 1; }
+  85%  { opacity: 0.7; }
+  100% { transform: translateY(var(--rise, -380px)) translateX(var(--drift, 18px)) scale(0.3); opacity: 0; }
+}
+.ember {
+  position: absolute;
+  bottom: 8%;
+  width: var(--size, 4px);
+  height: var(--size, 4px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,200,120,0.95) 0%, rgba(255,130,40,0.85) 45%, rgba(200,70,20,0) 75%);
+  box-shadow: 0 0 6px 1px rgba(255,140,50,0.55);
+  animation: emberRise var(--dur, 6s) ease-in infinite;
+  animation-delay: var(--delay, 0s);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-in { animation: none; opacity: 1; }
+  .kenburns { animation: none; }
+  .fire-glow, .ember { animation: none; }
+  .ember { opacity: 0; }
+}
+
+::selection {
+  background-color: var(--ink);
+  color: var(--paper);
+}
+
+/* Subtle paper grain texture for cream sections */
+.paper-texture {
+  background-color: var(--paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Image hover zoom helper */
+.img-zoom { overflow: hidden; }
+.img-zoom img { transition: transform 1.1s cubic-bezier(0.16,1,0.3,1); will-change: transform; }
+.img-zoom:hover img { transform: scale(1.06); }
+
+/* ============ Premium polish ============ */
+
+/* Refined headline tracking */
+.headline { letter-spacing: -0.02em; }
+
+/* Eyebrow — tracked uppercase label */
+.eyebrow {
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.32em;
+}
+
+/* Animated underline for inline links */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.link-underline:hover::after { transform: scaleX(1); transform-origin: left; }
+
+/* Film grain — applied site-wide via a fixed overlay */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+/* Marquee strip */
+.marquee { display: flex; overflow: hidden; width: 100%; user-select: none; }
+.marquee__track {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  white-space: nowrap;
+  animation: marquee var(--marquee-duration, 36s) linear infinite;
+}
+.marquee:hover .marquee__track { animation-play-state: paused; }
+
+/* Image: black & white by default, warms to colour only while it is in front
+   of the viewer (centred in the viewport), then fades back to B&W on leaving.
+   The `.is-colored` class is toggled by the ImageFocus observer. */
+.img-duo img {
+  filter: grayscale(100%) contrast(1.02);
+  transition: filter 1.1s cubic-bezier(0.16,1,0.3,1), transform 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+.img-duo.is-colored img {
+  filter: grayscale(0%);
+}
+
+/* Refined custom scrollbar */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--ink); border: 3px solid var(--paper); border-radius: 10px; }
+
+/* Dotted leader for menu rows */
+.leader {
+  flex: 1;
+  margin: 0 0.75rem;
+  border-bottom: 1px dotted var(--line);
+  transform: translateY(-4px);
+}
+
+/* Subtle char reveal for big headlines (used with Reveal) */
+@keyframes floatUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
