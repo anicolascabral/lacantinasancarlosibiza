@@ -3,8 +3,10 @@
 import { waLink } from "@/lib/site";
 import Marquee from "./Marquee";
 import Embers from "./Embers";
+import { useI18n } from "@/lib/i18n";
 
 export default function Hero() {
+  const { t } = useI18n();
   return (
     <section className="relative w-full overflow-hidden" style={{ height: "100svh", minHeight: "660px", backgroundColor: "var(--ink)" }}>
       {/* Background photo — burning wood, slow zoom */}
@@ -48,7 +50,7 @@ export default function Hero() {
         {/* One short line — same cream colour as everything else */}
         <div className="hero-in flex items-center gap-3 mt-10" style={{ color: "var(--paper)", animationDelay: "0.3s" }}>
           <span className="h-px w-6" style={{ backgroundColor: "currentColor", opacity: 0.5 }} />
-          <span className="eyebrow" style={{ fontSize: "0.64rem" }}>Cocina de fuego · San Carlos, Ibiza</span>
+          <span className="eyebrow" style={{ fontSize: "0.64rem" }}>{t.hero.eyebrow}</span>
           <span className="h-px w-6" style={{ backgroundColor: "currentColor", opacity: 0.5 }} />
         </div>
 
@@ -58,7 +60,7 @@ export default function Hero() {
             className="group inline-flex items-center gap-3 px-8 py-4 text-xs tracking-widest uppercase font-body font-bold transition-opacity hover:opacity-85"
             style={{ backgroundColor: "var(--paper)", color: "var(--ink)", letterSpacing: "0.18em" }}
           >
-            Ver la carta
+            {t.hero.viewMenu}
             <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>
           </a>
           <a
@@ -70,7 +72,7 @@ export default function Hero() {
             onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--paper)")}
             onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(243,238,227,0.45)")}
           >
-            Reservar mesa
+            {t.hero.bookTable}
           </a>
         </div>
       </div>
@@ -78,7 +80,7 @@ export default function Hero() {
       {/* Bottom marquee strip */}
       <div className="absolute bottom-0 left-0 right-0 z-10 py-4" style={{ borderTop: "1px solid rgba(243,238,227,0.15)" }}>
         <Marquee
-          items={["Horno de barro", "Cocina de leña", "Producto de temporada", "San Carlos · Ibiza", "Fuego real"]}
+          items={t.hero.marquee}
           duration={34}
           className="font-display uppercase"
           style={{ color: "rgba(243,238,227,0.6)", fontSize: "0.8rem", letterSpacing: "0.15em" }}

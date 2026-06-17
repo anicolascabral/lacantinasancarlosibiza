@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { LangProvider } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.lacantinasancarlosibiza.com"),
@@ -39,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="h-full">
       <body className="min-h-full flex flex-col antialiased">
-        {children}
+        <LangProvider>{children}</LangProvider>
         <div className="grain-overlay" aria-hidden />
       </body>
     </html>

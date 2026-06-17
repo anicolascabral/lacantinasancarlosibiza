@@ -2,14 +2,11 @@
 
 import Reveal from "./Reveal";
 import { MalletIcon } from "./Icons";
-
-const events = [
-  { title: "Noches de Brasa", date: "Cada viernes", desc: "Menú especial al horno de leña con maridaje de vinos.", img: "/images/meat-grill.jpg", n: "01" },
-  { title: "Mesa Larga", date: "Bajo reserva", desc: "Celebraciones y grupos alrededor de una mesa compartida.", img: "/images/tapas.jpg", n: "02" },
-  { title: "Fuego & Música", date: "Temporada", desc: "Cenas con música en vivo bajo el cielo de San Carlos.", img: "/images/wine.jpg", n: "03" },
-];
+import { useI18n } from "@/lib/i18n";
 
 export default function Events() {
+  const { t } = useI18n();
+  const e = t.events;
   return (
     <section className="py-28 md:py-40 px-6" style={{ backgroundColor: "var(--white)" }}>
       <div className="max-w-6xl mx-auto">
@@ -17,21 +14,21 @@ export default function Events() {
           <Reveal>
             <div className="flex items-center gap-3 mb-6" style={{ color: "var(--muted)" }}>
               <span className="h-px w-6" style={{ backgroundColor: "currentColor" }} />
-              <span className="eyebrow">Experiencias</span>
+              <span className="eyebrow">{e.eyebrow}</span>
               <span className="h-px w-6" style={{ backgroundColor: "currentColor" }} />
             </div>
           </Reveal>
           <Reveal delay={60}><MalletIcon size={36} className="mb-4" /></Reveal>
           <Reveal delay={100}>
-            <span className="font-script" style={{ fontSize: "clamp(1.4rem,3vw,2rem)", color: "var(--ink)" }}>eventos</span>
+            <span className="font-script" style={{ fontSize: "clamp(1.4rem,3vw,2rem)", color: "var(--ink)" }}>{e.script}</span>
           </Reveal>
           <Reveal delay={140}>
-            <h2 className="headline mt-3" style={{ fontSize: "clamp(2.2rem,7vw,5.5rem)", color: "var(--ink)" }}>Celebra con nosotros</h2>
+            <h2 className="headline mt-3" style={{ fontSize: "clamp(2.2rem,7vw,5.5rem)", color: "var(--ink)" }}>{e.title}</h2>
           </Reveal>
         </div>
 
         <div className="mt-16 grid md:grid-cols-3 gap-6">
-          {events.map((ev, i) => (
+          {e.items.map((ev, i) => (
             <Reveal key={ev.title} delay={i * 90}>
               <div className="group h-full flex flex-col transition-transform duration-500 hover:-translate-y-1.5" style={{ backgroundColor: "var(--paper)" }}>
                 <figure className="img-zoom img-duo w-full relative" style={{ aspectRatio: "4/3" }}>
