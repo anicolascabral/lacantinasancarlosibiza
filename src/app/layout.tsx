@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.lacantinasancarlosibiza.com"),
   title: "La Cantina de San Carlos — Ibiza",
   description:
     "Cocina de fuego en el corazón de San Carlos, Ibiza. Horno de barro artesanal alimentado con leña, ingredientes frescos y tradición mediterránea.",
@@ -12,6 +13,21 @@ export const metadata: Metadata = {
     description: "Cocina de fuego en el corazón de San Carlos, Ibiza.",
     locale: "es_ES",
     type: "website",
+    siteName: "La Cantina de San Carlos",
+    images: [
+      {
+        url: "/og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "La Cantina de San Carlos — Cocina de fuego en Ibiza",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "La Cantina de San Carlos — Ibiza",
+    description: "Cocina de fuego en el corazón de San Carlos, Ibiza.",
+    images: ["/og.jpg"],
   },
 };
 
