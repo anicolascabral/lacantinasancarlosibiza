@@ -1,16 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import Reveal from "./Reveal";
-import { CasitaIcon } from "./Icons";
-import { waLink, INSTAGRAM, PHONE, PHONE_TEL, EMAIL, EMAIL_MAILTO } from "@/lib/site";
+import { CasitaIcon, InstagramIcon } from "./Icons";
+import { INSTAGRAM, PHONE, PHONE_TEL, EMAIL } from "@/lib/site";
 import { useI18n } from "@/lib/i18n";
 
 export default function Reservation() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const r = t.reservation;
+  const f = r.form;
+  const [sent, setSent] = useState(false);
+
+  const ph =
+    lang === "es"
+      ? { name: "Tu nombre", email: "tu@correo.com", phone: "+34 600 000 000", message: "Alergias, celebración especial…" }
+      : { name: "Your name", email: "you@email.com", phone: "+34 600 000 000", message: "Allergies, special occasion…" };
+  const successMsg = lang === "es" ? "¡Gracias! Hemos abierto tu correo para enviar la reserva." : "Thank you! We've opened your email to send the request.";
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    if (data.get("company")) return; // honeypot — bot filled the hidden field
+    const get = (k: string) => (data.get(k) as string)?.trim() || "—";
+    const subject = `Reserva · La Cantina de San Carlos`;
+    const body =
+      `${f.name}: ${get("name")}\n` +
+      `${f.email}: ${get("email")}\n` +
+      `${f.phone}: ${get("phone")}\n` +
+      `${f.date}: ${get("date")}\n` +
+      `${f.time}: ${get("time")}\n` +
+      `${f.guests}: ${get("guests")}\n\n` +
+      `${f.message}:\n${get("message")}\n`;
+    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSent(true);
+  }
+
   return (
     <section id="reservas" className="py-24 md:py-36 px-6 paper-texture">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <div className="flex flex-col items-center text-center">
           <Reveal>
             <div className="flex items-center gap-3 mb-6" style={{ color: "var(--muted)" }}>
@@ -33,33 +61,72 @@ export default function Reservation() {
           </p>
         </Reveal>
 
-        {/* Premium CTA — no image, monochrome button */}
+        {/* Premium reservation form — sends an email to info@ */}
         <Reveal delay={180}>
-          <div className="mt-14 flex flex-col items-center">
-            <a
-              href={waLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-3 px-10 py-5 text-xs sm:text-sm tracking-widest uppercase font-body font-bold transition-colors"
+          <form className="mt-12 grid grid-cols-2 gap-5" onSubmit={handleSubmit} noValidate>
+            {/* Honeypot — hidden from humans, traps bots */}
+            <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+
+            <div className="field-group col-span-2">
+              <label className="field-label">{f.name}</label>
+              <input name="name" type="text" required placeholder={ph.name} className="field" />
+            </div>
+            <div className="field-group col-span-2 sm:col-span-1">
+              <label className="field-label">{f.email}</label>
+              <input name="email" type="email" required placeholder={ph.email} className="field" />
+            </div>
+            <div className="field-group col-span-2 sm:col-span-1">
+              <label className="field-label">{f.phone}</label>
+              <input name="phone" type="tel" placeholder={ph.phone} className="field" />
+            </div>
+            <div className="field-group col-span-2 sm:col-span-1">
+              <label className="field-label">{f.date}</label>
+              <input name="date" type="date" className="field" />
+            </div>
+            <div className="field-group col-span-1">
+              <label className="field-label">{f.time}</label>
+              <input name="time" type="time" className="field" />
+            </div>
+            <div className="field-group col-span-1">
+              <label className="field-label">{f.guests}</label>
+              <select name="guests" defaultValue="2" className="field">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                  <option key={n} value={n}>{n} {n === 1 ? f.unit1 : f.unitN}</option>
+                ))}
+                <option value={f.more}>{f.more}</option>
+              </select>
+            </div>
+            <div className="field-group col-span-2">
+              <label className="field-label">{f.message}</label>
+              <textarea name="message" rows={3} placeholder={ph.message} className="field resize-none" />
+            </div>
+
+            <button
+              type="submit"
+              className="group col-span-2 mt-1 inline-flex items-center justify-center gap-3 py-4 text-xs tracking-widest uppercase font-body font-bold transition-all hover:gap-4"
               style={{ backgroundColor: "var(--ink)", color: "var(--paper)", letterSpacing: "0.2em" }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#2A2622")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--ink)")}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                <path d="M17.5 14.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.22 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35zM12 2a10 10 0 00-8.5 15.3L2 22l4.8-1.46A10 10 0 1012 2z" />
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path d="m3 7 9 6 9-6" />
               </svg>
-              {r.button}
+              {f.send}
               <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>
-            </a>
-            <p className="mt-5 eyebrow" style={{ color: "var(--muted)", fontSize: "0.6rem" }}>
-              {r.quick}
+            </button>
+
+            <p className="col-span-2 mt-1 text-center transition-colors" style={{ color: sent ? "var(--ink)" : "var(--muted)" }}>
+              {sent ? (
+                <span className="font-body text-sm">{successMsg}</span>
+              ) : (
+                <span className="eyebrow" style={{ fontSize: "0.58rem" }}>{r.quick}</span>
+              )}
             </p>
-          </div>
+          </form>
         </Reveal>
 
         {/* Contact strip */}
         <Reveal delay={120}>
-          <div className="mt-14 grid sm:grid-cols-3 gap-8 text-center" style={{ borderTop: "1px solid var(--line)", paddingTop: "3rem" }}>
+          <div className="mt-16 grid sm:grid-cols-3 gap-8 text-center" style={{ borderTop: "1px solid var(--line)", paddingTop: "3rem" }}>
             <div>
               <p className="text-[11px] tracking-widest uppercase font-body font-bold mb-2" style={{ color: "var(--muted)", letterSpacing: "0.18em" }}>{r.addressLabel}</p>
               <p className="font-body text-sm whitespace-pre-line" style={{ color: "var(--ink)", lineHeight: 1.7 }}>{r.address}</p>
@@ -70,9 +137,11 @@ export default function Reservation() {
             </div>
             <div>
               <p className="text-[11px] tracking-widest uppercase font-body font-bold mb-2" style={{ color: "var(--muted)", letterSpacing: "0.18em" }}>{r.contactLabel}</p>
+              <a href={`mailto:${EMAIL}`} className="font-body text-sm block hover:opacity-60 transition-opacity break-all" style={{ color: "var(--ink)" }}>{EMAIL}</a>
               <a href={PHONE_TEL} className="font-body text-sm block hover:opacity-60 transition-opacity" style={{ color: "var(--ink)" }}>{PHONE}</a>
-              <a href={EMAIL_MAILTO} className="font-body text-sm block hover:opacity-60 transition-opacity break-all" style={{ color: "var(--ink)" }}>{EMAIL}</a>
-              <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="font-body text-sm block hover:opacity-60 transition-opacity" style={{ color: "var(--ink)" }}>@lacantinadesancarlos</a>
+              <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="font-body text-sm inline-flex items-center justify-center gap-2 hover:opacity-60 transition-opacity" style={{ color: "var(--ink)" }}>
+                <InstagramIcon size={15} /> @lacantinadesancarlos
+              </a>
             </div>
           </div>
         </Reveal>

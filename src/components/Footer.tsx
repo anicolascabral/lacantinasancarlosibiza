@@ -1,7 +1,8 @@
 "use client";
 
-import { waLink, INSTAGRAM, PHONE, PHONE_TEL, EMAIL, EMAIL_MAILTO } from "@/lib/site";
+import { INSTAGRAM, PHONE, PHONE_TEL, EMAIL, EMAIL_MAILTO } from "@/lib/site";
 import Marquee from "./Marquee";
+import { InstagramIcon } from "./Icons";
 import { useI18n } from "@/lib/i18n";
 
 export default function Footer() {
@@ -31,8 +32,10 @@ export default function Footer() {
             <div className="flex flex-col gap-1.5 font-body text-sm" style={{ color: "rgba(243,238,227,0.6)" }}>
               <a href={PHONE_TEL} className="hover:text-[var(--paper)] transition-colors">{PHONE}</a>
               <a href={EMAIL_MAILTO} className="hover:text-[var(--paper)] transition-colors break-all">{EMAIL}</a>
-              <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--paper)] transition-colors">@lacantinadesancarlos</a>
-              <a href={waLink} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--paper)] transition-colors">{f.waText}</a>
+              <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 hover:text-[var(--paper)] transition-colors">
+                <InstagramIcon size={15} /> @lacantinadesancarlos
+              </a>
+              <a href="#reservas" className="hover:text-[var(--paper)] transition-colors">{f.waText}</a>
               <a href="#carta" className="hover:text-[var(--paper)] transition-colors">{f.menuLink}</a>
             </div>
           </div>

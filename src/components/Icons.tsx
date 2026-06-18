@@ -55,6 +55,34 @@ export function MalletIcon({ size = 32, className = "", variant = "ink", style }
   );
 }
 
+// Olive branch — Mediterranean / produce (the olive trees of the finca)
+export function OliveIcon({ size = 32, className = "", variant = "ink", style }: IconProps) {
+  const color = variant === "paper" ? "var(--paper)" : "var(--ink)";
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" className={className} style={{ color, ...style }} aria-hidden>
+      <g stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+        <path fill="none" d="M31 58c-2-13 0-26 9-35" />
+        <path fill="currentColor" d="M42 23c5-4 11-4 16-2-4 4-11 5-16 2Z" />
+        <path fill="currentColor" d="M38 32c-5-3-11-2-15 2 4 3 11 3 15-2Z" />
+        <path fill="currentColor" d="M41 30c5-3 11-3 15 0-4 3-11 4-15 0Z" />
+        <circle cx="28" cy="53" r="3.4" fill="none" />
+        <circle cx="33" cy="45" r="3.1" fill="none" />
+      </g>
+    </svg>
+  );
+}
+
+// Instagram glyph (so the @handle is clearly identified)
+export function InstagramIcon({ size = 16, className = "", style }: { size?: number; className?: string; style?: React.CSSProperties }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className={className} style={style} aria-hidden>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 // Decorative row between sections — palm · oven · casita
 export function IconRule({ variant = "ink", className = "" }: { variant?: "ink" | "paper"; className?: string }) {
   const line = variant === "paper" ? "rgba(243,238,227,0.4)" : "rgba(24,22,19,0.3)";

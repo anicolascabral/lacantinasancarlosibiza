@@ -21,8 +21,12 @@ type Dict = {
   gallery: { eyebrow: string; script: string; title: string; tiles: { src: string; h: string; hint: string }[]; marquee: string[] };
   events: { eyebrow: string; script: string; title: string; items: { title: string; date: string; desc: string; img: string; n: string }[] };
   reservation: {
-    eyebrow: string; script: string; title: string; intro: string; button: string; quick: string;
+    eyebrow: string; script: string; title: string; intro: string; quick: string;
     addressLabel: string; address: string; hoursLabel: string; hours: string; contactLabel: string;
+    form: {
+      name: string; email: string; phone: string; date: string; time: string; guests: string;
+      message: string; send: string; unit1: string; unitN: string; more: string;
+    };
   };
   footer: {
     whereLabel: string; where: string[]; hoursLabel: string; hours: string[]; followLabel: string;
@@ -45,10 +49,10 @@ const translations: Record<Lang, Dict> = {
       ],
     },
     hero: {
-      eyebrow: "Cocina de fuego · pescado, marisco y brasa",
+      eyebrow: "Cocina mediterránea al fuego · producto artesanal",
       viewMenu: "Nuestra cocina",
       bookTable: "Reservar mesa",
-      marquee: ["Pescado entero", "Cocina de fuego", "Producto del día", "San Carlos · Ibiza", "Marisco y brasa"],
+      marquee: ["Pasta artesanal", "Cocina de fuego", "Producto de temporada", "San Carlos · Ibiza", "Mediterráneo"],
     },
     about: {
       eyebrow: "Nuestra esencia",
@@ -71,26 +75,25 @@ const translations: Record<Lang, Dict> = {
       quote: "“Respetar el producto, esperar el momento justo y dejar que el fuego haga su trabajo”",
       caption: "El horno de barro",
       p1: "Cocinar con fuego es otra forma de entender la gastronomía. La brasa y la leña envuelven el producto lentamente, aportándole una textura única, aromas profundos y ese inconfundible toque ahumado que solo el fuego puede ofrecer.",
-      p2: "El fuego es el centro de todo: pescados enteros, mariscos, verduras de temporada, arroces y cortes de carne encuentran en la brasa y el horno su mejor expresión.",
+      p2: "El fuego es el centro de todo: pasta artesanal, verduras de la huerta y pescado del día encuentran en la brasa y el horno su mejor expresión. Cocina mediterránea, de producto y sin prisa.",
       pillars: [
-        { t: "Mar", d: "Pescado del día", n: "01" },
-        { t: "Brasa", d: "Fuego real", n: "02" },
-        { t: "Huerta", d: "De temporada", n: "03" },
-        { t: "Tiempo", d: "Sin prisas", n: "04" },
+        { t: "Horno", d: "De barro y leña", n: "01" },
+        { t: "Leña", d: "Fuego real", n: "02" },
+        { t: "Mediterráneo", d: "De temporada", n: "03" },
+        { t: "Tradición", d: "Sin prisas", n: "04" },
       ],
     },
     menu: {
       eyebrow: "La cocina",
       script: "qué cocinamos",
-      title: "Lo que sale del fuego",
+      title: "Cocina mediterránea al fuego",
       image: "/images/venue-oven-front.jpg",
-      intro: "No trabajamos con una carta cerrada: cocinamos con el producto fresco de cada día y dejamos que el fuego haga el resto. En las brasas y el horno de leña cobran vida recetas que encuentran en el fuego su mejor expresión.",
+      intro: "Cocina mediterránea, artesanal y de producto. Trabajamos lo fresco de cada día — pasta hecha en casa, verduras de la huerta y pescado del mar — y dejamos que la leña y la brasa hagan el resto.",
       families: [
-        { n: "01", name: "Pescados enteros", desc: "Y mariscos del día, a la brasa y al horno de leña." },
-        { n: "02", name: "Cortes de carne", desc: "Asados al fuego, jugosos y en su punto." },
-        { n: "03", name: "Verduras asadas", desc: "De temporada, sobre las brasas." },
-        { n: "04", name: "Boniatos", desc: "Al rescoldo, dulces y ahumados." },
-        { n: "05", name: "Panes artesanales", desc: "Horneados con leña, recién hechos." },
+        { n: "01", name: "Pastas", desc: "Frescas, elaboradas en casa cada día." },
+        { n: "02", name: "Verduras al fuego", desc: "De la huerta, a la brasa y al horno de leña." },
+        { n: "03", name: "Pescado del día", desc: "Producto del mar, según la lonja." },
+        { n: "04", name: "Producto de temporada", desc: "Trabajamos lo fresco, con tiempo y sin prisa." },
       ],
       note: "La cocina cambia con el producto de cada jornada. También, pizza al metro al horno de leña. Consulta por alérgenos e ingredientes del día.",
     },
@@ -98,12 +101,12 @@ const translations: Record<Lang, Dict> = {
       eyebrow: "Momentos", script: "galería", title: "Alrededor del fuego",
       tiles: [
         { src: "/images/fire-logs.jpg", h: "tall", hint: "Fuego real, solo leña" },
-        { src: "/images/whole-fish.jpg", h: "short", hint: "Pescados enteros" },
-        { src: "/images/steak.jpg", h: "short", hint: "Cortes de carne al fuego" },
-        { src: "/images/seafood-rice.jpg", h: "tall", hint: "Arroces y marisco" },
-        { src: "/images/venue-terrace.jpg", h: "short", hint: "Reunir y compartir" },
+        { src: "/images/venue-terrace.jpg", h: "short", hint: "La pérgola" },
+        { src: "/images/venue-olives.jpg", h: "short", hint: "De la tierra" },
+        { src: "/images/venue-patio.jpg", h: "tall", hint: "El jardín" },
+        { src: "/images/venue-mallet.jpg", h: "short", hint: "Oficio artesanal" },
       ],
-      marquee: ["Pescados enteros", "Cortes de carne", "Verduras asadas", "Boniatos", "Panes artesanales", "A la brasa"],
+      marquee: ["Pasta artesanal", "Verduras al fuego", "Pescado del día", "Producto de temporada", "Cocina mediterránea", "A la brasa"],
     },
     events: {
       eyebrow: "Experiencias", script: "eventos", title: "Celebra con nosotros",
@@ -115,17 +118,21 @@ const translations: Record<Lang, Dict> = {
     },
     reservation: {
       eyebrow: "Reservas", script: "tu mesa te espera", title: "Reserva tu mesa",
-      intro: "Escríbenos por WhatsApp y te confirmamos al momento. Cuéntanos día, hora y número de personas — del resto nos encargamos nosotros.",
-      button: "Reservar por WhatsApp", quick: "Respuesta rápida · Sant Carles, Ibiza",
+      intro: "Déjanos tus datos y te confirmamos por correo. Cuéntanos el día, la hora y el número de personas — del resto nos encargamos nosotros.",
+      quick: "Te respondemos pronto · info@lacantinasancarlosibiza.com",
       addressLabel: "Dirección", address: "Plaça de la Iglesia, bajos 4\n07850 Sant Carles, Ibiza",
-      hoursLabel: "Horario", hours: "Martes — Domingo\n13:00 — 16:00 · 19:30 — 23:30",
+      hoursLabel: "Horario", hours: "Cada día excepto miércoles\n13:00 — 16:00 · 19:30 — 23:30",
       contactLabel: "Contacto",
+      form: {
+        name: "Nombre", email: "Correo", phone: "Teléfono", date: "Día", time: "Hora", guests: "Personas",
+        message: "Mensaje", send: "Enviar reserva", unit1: "persona", unitN: "personas", more: "Más de 8",
+      },
     },
     footer: {
       whereLabel: "Dónde", where: ["Plaça de la Iglesia, bajos 4", "07850 Sant Carles", "Ibiza, Islas Baleares"],
-      hoursLabel: "Horario", hours: ["Martes — Domingo", "13:00 — 16:00 · 19:30 — 23:30", "Lunes cerrado"],
-      followLabel: "Contacto", waText: "Reservar por WhatsApp", menuLink: "Cocina",
-      marquee: ["La Cantina de San Carlos", "Cocina de fuego", "Pescado y marisco", "Ibiza"],
+      hoursLabel: "Horario", hours: ["Cada día", "13:00 — 16:00 · 19:30 — 23:30", "Miércoles cerrado"],
+      followLabel: "Contacto", waText: "Reservar por correo", menuLink: "Cocina",
+      marquee: ["La Cantina de San Carlos", "Cocina mediterránea", "Pasta artesanal", "Ibiza"],
       fireIn: "cocina de fuego en", tagline: "Producto fresco, fuego real y mesa para compartir.",
       rights: "La Cantina de San Carlos · Ibiza",
     },
@@ -145,10 +152,10 @@ const translations: Record<Lang, Dict> = {
       ],
     },
     hero: {
-      eyebrow: "Fire cooking · fish, seafood & coals",
+      eyebrow: "Mediterranean fire cooking · artisanal produce",
       viewMenu: "Our kitchen",
       bookTable: "Book a table",
-      marquee: ["Whole fish", "Fire cooking", "Catch of the day", "San Carlos · Ibiza", "Seafood & coals"],
+      marquee: ["Handmade pasta", "Fire cooking", "Seasonal produce", "San Carlos · Ibiza", "Mediterranean"],
     },
     about: {
       eyebrow: "Our essence",
@@ -171,26 +178,25 @@ const translations: Record<Lang, Dict> = {
       quote: "“Respect the produce, wait for the right moment and let the fire do its work”",
       caption: "Our clay oven",
       p1: "Cooking with fire is a different way of understanding gastronomy. Coals and wood wrap the produce slowly, giving it a unique texture, deep aromas and that unmistakable smoky touch only fire can offer.",
-      p2: "Fire is the centre of everything: whole fish, seafood, seasonal vegetables, rice dishes and cuts of meat find their best expression over the coals and in the oven.",
+      p2: "Fire is the centre of everything: handmade pasta, garden vegetables and the catch of the day find their best expression over the coals and in the oven. Mediterranean cooking, produce-led and unhurried.",
       pillars: [
-        { t: "Sea", d: "Catch of the day", n: "01" },
-        { t: "Coals", d: "Real fire", n: "02" },
-        { t: "Garden", d: "In season", n: "03" },
-        { t: "Time", d: "No rush", n: "04" },
+        { t: "Oven", d: "Clay & wood", n: "01" },
+        { t: "Wood", d: "Real fire", n: "02" },
+        { t: "Mediterranean", d: "In season", n: "03" },
+        { t: "Tradition", d: "No rush", n: "04" },
       ],
     },
     menu: {
       eyebrow: "Our kitchen",
       script: "what we cook",
-      title: "Straight from the fire",
+      title: "Mediterranean fire cooking",
       image: "/images/venue-oven-front.jpg",
-      intro: "We don't work from a fixed menu: we cook with the fresh produce of each day and let the fire do the rest. Over the coals and in the wood-fired oven, recipes find their finest expression.",
+      intro: "Mediterranean cooking, handmade and produce-led. We work what's fresh each day — house-made pasta, vegetables from the garden and fish from the sea — and let the wood and coals do the rest.",
       families: [
-        { n: "01", name: "Whole fish", desc: "And seafood of the day, over the coals and wood-fired." },
-        { n: "02", name: "Cuts of meat", desc: "Grilled over fire, juicy and just right." },
-        { n: "03", name: "Roasted vegetables", desc: "Seasonal, over the embers." },
-        { n: "04", name: "Sweet potatoes", desc: "In the embers, sweet and smoky." },
-        { n: "05", name: "Artisan breads", desc: "Wood-fired, freshly baked." },
+        { n: "01", name: "Pasta", desc: "Fresh, made in-house every day." },
+        { n: "02", name: "Vegetables over fire", desc: "From the garden, grilled and wood-fired." },
+        { n: "03", name: "Catch of the day", desc: "From the sea, as the market brings it." },
+        { n: "04", name: "Seasonal produce", desc: "We work what's fresh, with time and care." },
       ],
       note: "Our kitchen changes with each day's produce. Also, metre-long pizza from the wood-fired oven. Ask us about allergens and the day's ingredients.",
     },
@@ -198,12 +204,12 @@ const translations: Record<Lang, Dict> = {
       eyebrow: "Moments", script: "gallery", title: "Around the fire",
       tiles: [
         { src: "/images/fire-logs.jpg", h: "tall", hint: "Real fire, wood only" },
-        { src: "/images/whole-fish.jpg", h: "short", hint: "Whole fish" },
-        { src: "/images/steak.jpg", h: "short", hint: "Cuts of meat over fire" },
-        { src: "/images/seafood-rice.jpg", h: "tall", hint: "Rice & seafood" },
-        { src: "/images/venue-terrace.jpg", h: "short", hint: "Gather and share" },
+        { src: "/images/venue-terrace.jpg", h: "short", hint: "The pergola" },
+        { src: "/images/venue-olives.jpg", h: "short", hint: "From the land" },
+        { src: "/images/venue-patio.jpg", h: "tall", hint: "The garden" },
+        { src: "/images/venue-mallet.jpg", h: "short", hint: "Handmade craft" },
       ],
-      marquee: ["Whole fish", "Cuts of meat", "Roasted vegetables", "Sweet potatoes", "Artisan breads", "Over the coals"],
+      marquee: ["Handmade pasta", "Vegetables over fire", "Catch of the day", "Seasonal produce", "Mediterranean cooking", "Over the coals"],
     },
     events: {
       eyebrow: "Experiences", script: "events", title: "Celebrate with us",
@@ -215,17 +221,21 @@ const translations: Record<Lang, Dict> = {
     },
     reservation: {
       eyebrow: "Reservations", script: "your table awaits", title: "Book your table",
-      intro: "Message us on WhatsApp and we'll confirm right away. Tell us the day, time and number of guests — we'll take care of the rest.",
-      button: "Book via WhatsApp", quick: "Quick reply · Sant Carles, Ibiza",
+      intro: "Leave us your details and we'll confirm by email. Tell us the day, time and number of guests — we'll take care of the rest.",
+      quick: "We reply soon · info@lacantinasancarlosibiza.com",
       addressLabel: "Address", address: "Plaça de la Iglesia, bajos 4\n07850 Sant Carles, Ibiza",
-      hoursLabel: "Hours", hours: "Tuesday — Sunday\n13:00 — 16:00 · 19:30 — 23:30",
+      hoursLabel: "Hours", hours: "Every day except Wednesday\n13:00 — 16:00 · 19:30 — 23:30",
       contactLabel: "Contact",
+      form: {
+        name: "Name", email: "Email", phone: "Phone", date: "Date", time: "Time", guests: "Guests",
+        message: "Message", send: "Send reservation", unit1: "guest", unitN: "guests", more: "More than 8",
+      },
     },
     footer: {
       whereLabel: "Where", where: ["Plaça de la Iglesia, bajos 4", "07850 Sant Carles", "Ibiza, Balearic Islands"],
-      hoursLabel: "Hours", hours: ["Tuesday — Sunday", "13:00 — 16:00 · 19:30 — 23:30", "Closed Mondays"],
-      followLabel: "Contact", waText: "Book via WhatsApp", menuLink: "Kitchen",
-      marquee: ["La Cantina de San Carlos", "Fire cooking", "Fish & seafood", "Ibiza"],
+      hoursLabel: "Hours", hours: ["Every day", "13:00 — 16:00 · 19:30 — 23:30", "Closed Wednesdays"],
+      followLabel: "Contact", waText: "Book by email", menuLink: "Kitchen",
+      marquee: ["La Cantina de San Carlos", "Mediterranean cooking", "Handmade pasta", "Ibiza"],
       fireIn: "fire cooking in", tagline: "Fresh produce, real fire and a table to share.",
       rights: "La Cantina de San Carlos · Ibiza",
     },

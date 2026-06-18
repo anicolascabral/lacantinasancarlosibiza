@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { waLink } from "@/lib/site";
 import { useI18n, Lang } from "@/lib/i18n";
 
 export default function Navbar() {
@@ -74,9 +73,7 @@ export default function Navbar() {
           <div className="flex items-center gap-5">
             <LangToggle color={fg} />
             <a
-              href={waLink}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#reservas"
               className="hidden lg:inline text-xs tracking-widest uppercase font-body font-bold transition-opacity hover:opacity-60"
               style={{ color: fg, letterSpacing: "0.18em" }}
             >
@@ -153,9 +150,7 @@ export default function Navbar() {
           </a>
         ))}
         <a
-          href={waLink}
-          target="_blank"
-          rel="noopener noreferrer"
+          href="#reservas"
           onClick={() => setMenuOpen(false)}
           className="mt-4 px-8 py-4 text-xs tracking-widest uppercase font-body font-bold transition-opacity hover:opacity-80"
           style={{ backgroundColor: "var(--paper)", color: "var(--ink)", letterSpacing: "0.2em" }}

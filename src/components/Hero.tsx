@@ -1,6 +1,5 @@
 "use client";
 
-import { waLink } from "@/lib/site";
 import Marquee from "./Marquee";
 import Embers from "./Embers";
 import { useI18n } from "@/lib/i18n";
@@ -64,9 +63,7 @@ export default function Hero() {
             <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>
           </a>
           <a
-            href={waLink}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#reservas"
             className="inline-flex items-center gap-3 px-8 py-4 text-xs tracking-widest uppercase font-body font-bold transition-colors"
             style={{ border: "1px solid rgba(243,238,227,0.45)", color: "var(--paper)", letterSpacing: "0.18em" }}
             onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--paper)")}
