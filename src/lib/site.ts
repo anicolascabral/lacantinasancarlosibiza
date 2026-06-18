@@ -11,3 +11,11 @@ export const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MSG}`;
 
 export const INSTAGRAM = "https://instagram.com/lacantinadesancarlos";
 export const ADDRESS = "Plaça de la Iglesia, bajos 4, 07850 Sant Carles, Ibiza";
+
+// Phone (display + tel: link)
+export const PHONE = "+34 971 24 36 27";
+export const PHONE_TEL = "tel:+34971243627";
+
+// Email
+export const EMAIL = "contacto@lacantinasancarlosibiza.com";
+export const EMAIL_MAILTO = "mailto:contacto@lacantinasancarlosibiza.com";

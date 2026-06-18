@@ -4,8 +4,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 
 export type Lang = "es" | "en";
 
-type Dish = { name: string; desc: string };
-type Category = { id: string; label: string; tag?: string; image: string; items: Dish[] };
+type Family = { n: string; name: string; desc: string };
 
 type Dict = {
   nav: { announce: string; reserve: string; menu: string; bookTable: string; links: { label: string; href: string }[] };
@@ -18,7 +17,7 @@ type Dict = {
     eyebrow: string; script: string; title: string; quote: string; caption: string; p1: string; p2: string;
     pillars: { t: string; d: string; n: string }[];
   };
-  menu: { eyebrow: string; script: string; title: string; note: string; categories: Category[] };
+  menu: { eyebrow: string; script: string; title: string; intro: string; note: string; image: string; families: Family[] };
   gallery: { eyebrow: string; script: string; title: string; tiles: { src: string; h: string; hint: string }[]; marquee: string[] };
   events: { eyebrow: string; script: string; title: string; items: { title: string; date: string; desc: string; img: string; n: string }[] };
   reservation: {
@@ -40,16 +39,16 @@ const translations: Record<Lang, Dict> = {
       bookTable: "Reservar Mesa",
       links: [
         { label: "Historia", href: "#historia" },
-        { label: "El Horno", href: "#horno" },
-        { label: "Carta", href: "#carta" },
+        { label: "El Fuego", href: "#horno" },
+        { label: "Cocina", href: "#carta" },
         { label: "Reservas", href: "#reservas" },
       ],
     },
     hero: {
-      eyebrow: "Cocina de fuego · San Carlos, Ibiza",
-      viewMenu: "Ver la carta",
+      eyebrow: "Cocina de fuego · pescado, marisco y brasa",
+      viewMenu: "Nuestra cocina",
       bookTable: "Reservar mesa",
-      marquee: ["Horno de barro", "Cocina de leña", "Producto de temporada", "San Carlos · Ibiza", "Fuego real"],
+      marquee: ["Pescado entero", "Cocina de fuego", "Producto del día", "San Carlos · Ibiza", "Marisco y brasa"],
     },
     about: {
       eyebrow: "Nuestra esencia",
@@ -57,7 +56,7 @@ const translations: Record<Lang, Dict> = {
       title: "El fuego real convierte lo simple en memorable",
       quote: "“Algunas de las mejores cosas de la vida ocurren alrededor de las brasas”",
       p1: "En el corazón de San Carlos, Ibiza, la cocina vuelve a sus raíces. Un espacio sin prisa, donde cada plato nace del respeto por el producto y el tiempo que necesita. Desde Uruguay hasta Ibiza llevamos la cultura del fuego: ingredientes sencillos, leña de verdad, dedicación.",
-      caption: "Cocina · La Cantina",
+      caption: "Reunir y compartir",
       stats: [
         { n: "100%", l: "Leña real" },
         { n: "400°", l: "En el horno" },
@@ -67,88 +66,51 @@ const translations: Record<Lang, Dict> = {
     },
     oven: {
       eyebrow: "El alma de la casa",
-      script: "el horno de barro",
-      title: "Fuego, barro y tiempo",
-      quote: "“Técnicas ancestrales que han acompañado a generaciones durante siglos”",
-      caption: "Pizza artesanal · horno de leña",
-      p1: "Cocinar con fuego y barro es otra forma de entender la gastronomía. El calor envuelve los alimentos lentamente, aportándoles una textura única, aromas profundos y ese inconfundible toque ahumado que solo la leña puede ofrecer.",
-      p2: "Sus posibilidades son infinitas: pescados enteros, cortes de carne, verduras asadas, boniatos y panes artesanales encuentran en el fuego su mejor expresión.",
+      script: "cocina de fuego",
+      title: "Brasa, leña y producto",
+      quote: "“Respetar el producto, esperar el momento justo y dejar que el fuego haga su trabajo”",
+      caption: "El horno de barro",
+      p1: "Cocinar con fuego es otra forma de entender la gastronomía. La brasa y la leña envuelven el producto lentamente, aportándole una textura única, aromas profundos y ese inconfundible toque ahumado que solo el fuego puede ofrecer.",
+      p2: "El fuego es el centro de todo: pescados enteros, mariscos, verduras de temporada, arroces y cortes de carne encuentran en la brasa y el horno su mejor expresión.",
       pillars: [
-        { t: "Barro", d: "Artesanal", n: "01" },
-        { t: "Leña", d: "Fuego real", n: "02" },
-        { t: "Tiempo", d: "Sin prisas", n: "03" },
-        { t: "Tradición", d: "Siglos de saber", n: "04" },
+        { t: "Mar", d: "Pescado del día", n: "01" },
+        { t: "Brasa", d: "Fuego real", n: "02" },
+        { t: "Huerta", d: "De temporada", n: "03" },
+        { t: "Tiempo", d: "Sin prisas", n: "04" },
       ],
     },
     menu: {
-      eyebrow: "La carta",
-      script: "nuestra carta",
+      eyebrow: "La cocina",
+      script: "qué cocinamos",
       title: "Lo que sale del fuego",
-      note: "La carta puede variar según el producto de temporada. Consulta con nuestro equipo por alérgenos e ingredientes del día.",
-      categories: [
-        {
-          id: "horno", label: "Del Horno de Barro", tag: "La especialidad", image: "/images/fish.jpg",
-          items: [
-            { name: "Carrillera Ibérica", desc: "Confitada lentamente al horno de barro" },
-            { name: "Costilla de Cerdo", desc: "Entera al horno de leña, marinada 24 horas" },
-            { name: "Rodaballo Entero al Horno", desc: "Pescado fresco del día, aceite de oliva y limón" },
-            { name: "Lubina Entera al Horno", desc: "Lubina salvaje, sal gruesa, aceite virgen extra" },
-            { name: "Picaña", desc: "Corte uruguayo al horno de barro, sal parrillera" },
-            { name: "Pizza Metro", desc: "Pizza de metro al horno de barro — ingredientes del día" },
-          ],
-        },
-        {
-          id: "entradas", label: "Entradas & Tapas", image: "/images/tapas.jpg",
-          items: [
-            { name: "Ensalada Thai de Gambas", desc: "Gambas frescas, hierbas asiáticas, jengibre y lima" },
-            { name: "Selección de Tomates", desc: "Tomates de temporada, aceite de oliva, sal Maldon" },
-            { name: "Trío de Mar", desc: "Selección de frutos del mar de la jornada" },
-            { name: "Almejas a la Marinera", desc: "Almejas frescas, vino blanco, ajo y perejil" },
-            { name: "Puerros a la Parrilla", desc: "Puerros confitados al horno con romesco" },
-            { name: "Gazpacho Estilo Bangkok", desc: "Gazpacho clásico con un toque de lemongrass" },
-            { name: "Hinojo Gratinado", desc: "Hinojo al horno de leña con queso y hierbas" },
-            { name: "Carpaccio del Día", desc: "Según mercado — consultar disponibilidad" },
-          ],
-        },
-        {
-          id: "pastas", label: "Pastas", image: "/images/pasta-caprese.jpg",
-          items: [
-            { name: "Linguini con Pistacho y Gambas", desc: "Pasta fresca, gambas, pesto de pistacho y limón" },
-            { name: "Gnocchi del Día", desc: "Gnocchi artesanal con salsa de temporada" },
-            { name: "Gnocchi Carbonara", desc: "Yema curada, guanciale, pecorino romano" },
-            { name: "Gnocchi al Cabrales", desc: "Salsa cremosa de queso Cabrales asturiano" },
-            { name: "Ravioli Caprese", desc: "Relleno de burrata y tomate seco, albahaca" },
-            { name: "Spaghetti Napoli", desc: "Tomate San Marzano, albahaca, aceite virgen extra" },
-          ],
-        },
-        {
-          id: "carnes", label: "Carnes", image: "/images/steak.jpg",
-          items: [
-            { name: "Entrecôte Angus", desc: "Corte madurado, sal Maldon, chimichurri de la casa" },
-            { name: "Cotoletta", desc: "Chuleta empanada, queso fundido y berenjena" },
-            { name: "Milanesa Napolitana", desc: "Milanesa clásica, tomate, jamón y queso gratinado" },
-          ],
-        },
+      image: "/images/venue-oven-front.jpg",
+      intro: "No trabajamos con una carta cerrada: cocinamos con el producto fresco de cada día y dejamos que el fuego haga el resto. En las brasas y el horno de leña cobran vida recetas que encuentran en el fuego su mejor expresión.",
+      families: [
+        { n: "01", name: "Pescados enteros", desc: "Y mariscos del día, a la brasa y al horno de leña." },
+        { n: "02", name: "Cortes de carne", desc: "Asados al fuego, jugosos y en su punto." },
+        { n: "03", name: "Verduras asadas", desc: "De temporada, sobre las brasas." },
+        { n: "04", name: "Boniatos", desc: "Al rescoldo, dulces y ahumados." },
+        { n: "05", name: "Panes artesanales", desc: "Horneados con leña, recién hechos." },
       ],
+      note: "La cocina cambia con el producto de cada jornada. También, pizza al metro al horno de leña. Consulta por alérgenos e ingredientes del día.",
     },
     gallery: {
       eyebrow: "Momentos", script: "galería", title: "Alrededor del fuego",
       tiles: [
-        { src: "/images/fire-grill.jpg", h: "tall", hint: "A la brasa" },
-        { src: "/images/fish-slate.jpg", h: "short", hint: "Pescado fresco" },
-        { src: "/images/meat-grill.jpg", h: "short", hint: "Carnes al fuego" },
-        { src: "/images/pasta-penne.jpg", h: "tall", hint: "Pasta artesanal" },
-        { src: "/images/wine.jpg", h: "tall", hint: "Para acompañar" },
-        { src: "/images/interior.jpg", h: "short", hint: "El ambiente" },
+        { src: "/images/fire-logs.jpg", h: "tall", hint: "Fuego real, solo leña" },
+        { src: "/images/whole-fish.jpg", h: "short", hint: "Pescados enteros" },
+        { src: "/images/steak.jpg", h: "short", hint: "Cortes de carne al fuego" },
+        { src: "/images/seafood-rice.jpg", h: "tall", hint: "Arroces y marisco" },
+        { src: "/images/venue-terrace.jpg", h: "short", hint: "Reunir y compartir" },
       ],
-      marquee: ["Carrillera ibérica", "Rodaballo al horno", "Picaña", "Pizza metro", "Lubina salvaje", "Costilla de cerdo"],
+      marquee: ["Pescados enteros", "Cortes de carne", "Verduras asadas", "Boniatos", "Panes artesanales", "A la brasa"],
     },
     events: {
       eyebrow: "Experiencias", script: "eventos", title: "Celebra con nosotros",
       items: [
-        { title: "Noches de Brasa", date: "Cada viernes", desc: "Menú especial al horno de leña con maridaje de vinos.", img: "/images/meat-grill.jpg", n: "01" },
-        { title: "Mesa Larga", date: "Bajo reserva", desc: "Celebraciones y grupos alrededor de una mesa compartida.", img: "/images/tapas.jpg", n: "02" },
-        { title: "Fuego & Música", date: "Temporada", desc: "Cenas con música en vivo bajo el cielo de San Carlos.", img: "/images/wine.jpg", n: "03" },
+        { title: "Noches de Brasa", date: "Cada viernes", desc: "Menú especial de fuego con maridaje de vinos.", img: "/images/venue-oven-door.jpg", n: "01" },
+        { title: "Mesa Larga", date: "Bajo reserva", desc: "Celebraciones y grupos alrededor de una mesa compartida.", img: "/images/venue-terrace.jpg", n: "02" },
+        { title: "Fuego & Música", date: "Temporada", desc: "Cenas con música en vivo bajo el cielo de San Carlos.", img: "/images/venue-patio.jpg", n: "03" },
       ],
     },
     reservation: {
@@ -162,9 +124,9 @@ const translations: Record<Lang, Dict> = {
     footer: {
       whereLabel: "Dónde", where: ["Plaça de la Iglesia, bajos 4", "07850 Sant Carles", "Ibiza, Islas Baleares"],
       hoursLabel: "Horario", hours: ["Martes — Domingo", "13:00 — 16:00 · 19:30 — 23:30", "Lunes cerrado"],
-      followLabel: "Contacto", waText: "Reservar por WhatsApp", menuLink: "Carta",
-      marquee: ["La Cantina de San Carlos", "Cocina de leña", "Horno de barro", "Ibiza"],
-      fireIn: "cocina de fuego en", tagline: "Donde el barro, la leña y la tradición se convierten en sabor.",
+      followLabel: "Contacto", waText: "Reservar por WhatsApp", menuLink: "Cocina",
+      marquee: ["La Cantina de San Carlos", "Cocina de fuego", "Pescado y marisco", "Ibiza"],
+      fireIn: "cocina de fuego en", tagline: "Producto fresco, fuego real y mesa para compartir.",
       rights: "La Cantina de San Carlos · Ibiza",
     },
   },
@@ -177,16 +139,16 @@ const translations: Record<Lang, Dict> = {
       bookTable: "Book a Table",
       links: [
         { label: "Story", href: "#historia" },
-        { label: "The Oven", href: "#horno" },
-        { label: "Menu", href: "#carta" },
+        { label: "The Fire", href: "#horno" },
+        { label: "Kitchen", href: "#carta" },
         { label: "Reservations", href: "#reservas" },
       ],
     },
     hero: {
-      eyebrow: "Fire cooking · San Carlos, Ibiza",
-      viewMenu: "View the menu",
+      eyebrow: "Fire cooking · fish, seafood & coals",
+      viewMenu: "Our kitchen",
       bookTable: "Book a table",
-      marquee: ["Clay oven", "Wood-fired cooking", "Seasonal produce", "San Carlos · Ibiza", "Real fire"],
+      marquee: ["Whole fish", "Fire cooking", "Catch of the day", "San Carlos · Ibiza", "Seafood & coals"],
     },
     about: {
       eyebrow: "Our essence",
@@ -194,7 +156,7 @@ const translations: Record<Lang, Dict> = {
       title: "Real fire turns the simple into the memorable",
       quote: "“Some of life's best things happen around the embers”",
       p1: "In the heart of San Carlos, Ibiza, cooking returns to its roots. An unhurried space where every dish is born from respect for the produce and the time it needs. From Uruguay to Ibiza we carry the culture of fire: simple ingredients, real wood, dedication.",
-      caption: "Kitchen · La Cantina",
+      caption: "Gather and share",
       stats: [
         { n: "100%", l: "Real wood" },
         { n: "400°", l: "In the oven" },
@@ -204,88 +166,51 @@ const translations: Record<Lang, Dict> = {
     },
     oven: {
       eyebrow: "The soul of the house",
-      script: "the clay oven",
-      title: "Fire, clay and time",
-      quote: "“Ancestral techniques that have accompanied generations for centuries”",
-      caption: "Artisan pizza · wood-fired oven",
-      p1: "Cooking with fire and clay is a different way of understanding gastronomy. The heat wraps the food slowly, giving it a unique texture, deep aromas and that unmistakable smoky touch only wood can offer.",
-      p2: "The possibilities are endless: whole fish, cuts of meat, roasted vegetables, sweet potatoes and artisan breads all find their best expression in the fire.",
+      script: "fire cooking",
+      title: "Coals, wood and produce",
+      quote: "“Respect the produce, wait for the right moment and let the fire do its work”",
+      caption: "Our clay oven",
+      p1: "Cooking with fire is a different way of understanding gastronomy. Coals and wood wrap the produce slowly, giving it a unique texture, deep aromas and that unmistakable smoky touch only fire can offer.",
+      p2: "Fire is the centre of everything: whole fish, seafood, seasonal vegetables, rice dishes and cuts of meat find their best expression over the coals and in the oven.",
       pillars: [
-        { t: "Clay", d: "Handcrafted", n: "01" },
-        { t: "Wood", d: "Real fire", n: "02" },
-        { t: "Time", d: "No rush", n: "03" },
-        { t: "Tradition", d: "Centuries of know-how", n: "04" },
+        { t: "Sea", d: "Catch of the day", n: "01" },
+        { t: "Coals", d: "Real fire", n: "02" },
+        { t: "Garden", d: "In season", n: "03" },
+        { t: "Time", d: "No rush", n: "04" },
       ],
     },
     menu: {
-      eyebrow: "The menu",
-      script: "our menu",
+      eyebrow: "Our kitchen",
+      script: "what we cook",
       title: "Straight from the fire",
-      note: "The menu may vary with the season's produce. Ask our team about allergens and the day's ingredients.",
-      categories: [
-        {
-          id: "horno", label: "From the Clay Oven", tag: "The specialty", image: "/images/fish.jpg",
-          items: [
-            { name: "Iberian Pork Cheek", desc: "Slowly confit in the clay oven" },
-            { name: "Pork Ribs", desc: "Whole in the wood-fired oven, marinated 24 hours" },
-            { name: "Whole Roasted Turbot", desc: "Fresh fish of the day, olive oil and lemon" },
-            { name: "Whole Roasted Sea Bass", desc: "Wild sea bass, coarse salt, extra virgin olive oil" },
-            { name: "Picanha", desc: "Uruguayan cut in the clay oven, grill salt" },
-            { name: "Metre Pizza", desc: "Metre-long pizza in the clay oven — ingredients of the day" },
-          ],
-        },
-        {
-          id: "entradas", label: "Starters & Tapas", image: "/images/tapas.jpg",
-          items: [
-            { name: "Thai Prawn Salad", desc: "Fresh prawns, Asian herbs, ginger and lime" },
-            { name: "Tomato Selection", desc: "Seasonal tomatoes, olive oil, Maldon salt" },
-            { name: "Trio of the Sea", desc: "Selection of the day's seafood" },
-            { name: "Clams Marinara", desc: "Fresh clams, white wine, garlic and parsley" },
-            { name: "Grilled Leeks", desc: "Oven-confit leeks with romesco" },
-            { name: "Bangkok-Style Gazpacho", desc: "Classic gazpacho with a touch of lemongrass" },
-            { name: "Gratinated Fennel", desc: "Wood-oven fennel with cheese and herbs" },
-            { name: "Carpaccio of the Day", desc: "Market choice — ask for availability" },
-          ],
-        },
-        {
-          id: "pastas", label: "Pasta", image: "/images/pasta-caprese.jpg",
-          items: [
-            { name: "Linguine with Pistachio & Prawns", desc: "Fresh pasta, prawns, pistachio pesto and lemon" },
-            { name: "Gnocchi of the Day", desc: "Handmade gnocchi with a seasonal sauce" },
-            { name: "Gnocchi Carbonara", desc: "Cured yolk, guanciale, pecorino romano" },
-            { name: "Gnocchi al Cabrales", desc: "Creamy Asturian Cabrales cheese sauce" },
-            { name: "Caprese Ravioli", desc: "Filled with burrata and sun-dried tomato, basil" },
-            { name: "Spaghetti Napoli", desc: "San Marzano tomato, basil, extra virgin olive oil" },
-          ],
-        },
-        {
-          id: "carnes", label: "Meats", image: "/images/steak.jpg",
-          items: [
-            { name: "Angus Entrecôte", desc: "Aged cut, Maldon salt, house chimichurri" },
-            { name: "Cotoletta", desc: "Breaded chop, melted cheese and aubergine" },
-            { name: "Milanesa Napolitana", desc: "Classic milanesa, tomato, ham and gratinated cheese" },
-          ],
-        },
+      image: "/images/venue-oven-front.jpg",
+      intro: "We don't work from a fixed menu: we cook with the fresh produce of each day and let the fire do the rest. Over the coals and in the wood-fired oven, recipes find their finest expression.",
+      families: [
+        { n: "01", name: "Whole fish", desc: "And seafood of the day, over the coals and wood-fired." },
+        { n: "02", name: "Cuts of meat", desc: "Grilled over fire, juicy and just right." },
+        { n: "03", name: "Roasted vegetables", desc: "Seasonal, over the embers." },
+        { n: "04", name: "Sweet potatoes", desc: "In the embers, sweet and smoky." },
+        { n: "05", name: "Artisan breads", desc: "Wood-fired, freshly baked." },
       ],
+      note: "Our kitchen changes with each day's produce. Also, metre-long pizza from the wood-fired oven. Ask us about allergens and the day's ingredients.",
     },
     gallery: {
       eyebrow: "Moments", script: "gallery", title: "Around the fire",
       tiles: [
-        { src: "/images/fire-grill.jpg", h: "tall", hint: "Over the coals" },
-        { src: "/images/fish-slate.jpg", h: "short", hint: "Fresh fish" },
-        { src: "/images/meat-grill.jpg", h: "short", hint: "Fire-cooked meats" },
-        { src: "/images/pasta-penne.jpg", h: "tall", hint: "Handmade pasta" },
-        { src: "/images/wine.jpg", h: "tall", hint: "To pair" },
-        { src: "/images/interior.jpg", h: "short", hint: "The atmosphere" },
+        { src: "/images/fire-logs.jpg", h: "tall", hint: "Real fire, wood only" },
+        { src: "/images/whole-fish.jpg", h: "short", hint: "Whole fish" },
+        { src: "/images/steak.jpg", h: "short", hint: "Cuts of meat over fire" },
+        { src: "/images/seafood-rice.jpg", h: "tall", hint: "Rice & seafood" },
+        { src: "/images/venue-terrace.jpg", h: "short", hint: "Gather and share" },
       ],
-      marquee: ["Iberian pork cheek", "Roasted turbot", "Picanha", "Metre pizza", "Wild sea bass", "Pork ribs"],
+      marquee: ["Whole fish", "Cuts of meat", "Roasted vegetables", "Sweet potatoes", "Artisan breads", "Over the coals"],
     },
     events: {
       eyebrow: "Experiences", script: "events", title: "Celebrate with us",
       items: [
-        { title: "Ember Nights", date: "Every Friday", desc: "Special wood-fired menu with wine pairing.", img: "/images/meat-grill.jpg", n: "01" },
-        { title: "Long Table", date: "On request", desc: "Celebrations and groups around a shared table.", img: "/images/tapas.jpg", n: "02" },
-        { title: "Fire & Music", date: "In season", desc: "Dinners with live music under the San Carlos sky.", img: "/images/wine.jpg", n: "03" },
+        { title: "Ember Nights", date: "Every Friday", desc: "Special fire menu with wine pairing.", img: "/images/venue-oven-door.jpg", n: "01" },
+        { title: "Long Table", date: "On request", desc: "Celebrations and groups around a shared table.", img: "/images/venue-terrace.jpg", n: "02" },
+        { title: "Fire & Music", date: "In season", desc: "Dinners with live music under the San Carlos sky.", img: "/images/venue-patio.jpg", n: "03" },
       ],
     },
     reservation: {
@@ -299,9 +224,9 @@ const translations: Record<Lang, Dict> = {
     footer: {
       whereLabel: "Where", where: ["Plaça de la Iglesia, bajos 4", "07850 Sant Carles", "Ibiza, Balearic Islands"],
       hoursLabel: "Hours", hours: ["Tuesday — Sunday", "13:00 — 16:00 · 19:30 — 23:30", "Closed Mondays"],
-      followLabel: "Contact", waText: "Book via WhatsApp", menuLink: "Menu",
-      marquee: ["La Cantina de San Carlos", "Wood-fired cooking", "Clay oven", "Ibiza"],
-      fireIn: "fire cooking in", tagline: "Where clay, wood and tradition become flavour.",
+      followLabel: "Contact", waText: "Book via WhatsApp", menuLink: "Kitchen",
+      marquee: ["La Cantina de San Carlos", "Fire cooking", "Fish & seafood", "Ibiza"],
+      fireIn: "fire cooking in", tagline: "Fresh produce, real fire and a table to share.",
       rights: "La Cantina de San Carlos · Ibiza",
     },
   },

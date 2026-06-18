@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Reveal from "./Reveal";
 import { HornoIcon } from "./Icons";
 import { useI18n } from "@/lib/i18n";
@@ -8,8 +7,6 @@ import { useI18n } from "@/lib/i18n";
 export default function Menu() {
   const { t } = useI18n();
   const m = t.menu;
-  const [active, setActive] = useState("horno");
-  const current = m.categories.find((c) => c.id === active) ?? m.categories[0];
 
   return (
     <section id="carta" className="py-24 md:py-36 px-6" style={{ backgroundColor: "var(--white)" }}>
@@ -32,57 +29,44 @@ export default function Menu() {
           </Reveal>
         </div>
 
-        {/* Category tabs — underline style */}
-        <Reveal delay={140}>
-          <div className="mt-14 flex flex-wrap justify-center gap-x-8 gap-y-3" style={{ borderBottom: "1px solid var(--line)" }}>
-            {m.categories.map((c) => (
-              <button
-                key={c.id}
-                onClick={() => setActive(c.id)}
-                className="relative pb-4 text-xs tracking-widest uppercase font-body font-bold transition-opacity"
-                style={{ letterSpacing: "0.14em", color: active === c.id ? "var(--ink)" : "var(--muted)", opacity: active === c.id ? 1 : 0.7 }}
-              >
-                {c.label}
-                <span className="absolute left-0 right-0 bottom-0 h-0.5 transition-transform duration-300" style={{ backgroundColor: "var(--ink)", transform: active === c.id ? "scaleX(1)" : "scaleX(0)" }} />
-              </button>
-            ))}
-          </div>
-        </Reveal>
-
-        {/* Image + dish list */}
-        <div className="mt-14 grid md:grid-cols-5 gap-10 lg:gap-16 items-start">
+        {/* Image + general description */}
+        <div className="mt-16 grid md:grid-cols-5 gap-10 lg:gap-16 items-start">
+          {/* Authentic oven image */}
           <div className="md:col-span-2 md:sticky md:top-28">
-            <figure className="img-zoom w-full rounded-sm relative aspect-[16/10] md:aspect-[4/5]">
+            <figure className="img-zoom img-duo w-full rounded-sm relative aspect-[16/10] md:aspect-[4/5]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img key={current.image} src={current.image} alt={current.label} className="w-full h-full object-cover" />
-              {current.tag && (
-                <span className="absolute top-4 left-4 eyebrow px-3 py-1.5" style={{ backgroundColor: "var(--ink)", color: "var(--paper)", fontSize: "0.55rem" }}>
-                  {current.tag}
-                </span>
-              )}
+              <img src={m.image} alt={m.title} className="w-full h-full object-cover" />
               <figcaption className="absolute bottom-4 left-4 font-script" style={{ color: "var(--paper)", fontSize: "1.3rem", textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
-                {current.label}
+                El horno
               </figcaption>
             </figure>
           </div>
 
+          {/* Intro + product families */}
           <div className="md:col-span-3">
-            {current.items.map((dish, i) => (
-              <Reveal key={dish.name} delay={i * 40}>
-                <div className="group py-5" style={{ borderBottom: "1px solid var(--line)" }}>
-                  <div className="flex items-baseline">
-                    <h4 className="font-display uppercase text-base md:text-lg transition-colors" style={{ color: "var(--ink)", letterSpacing: "0.02em" }}>{dish.name}</h4>
-                    <span className="leader" />
-                    <span className="flex-shrink-0 transition-transform group-hover:translate-x-1" style={{ color: "var(--ink)" }}>↗</span>
+            <Reveal>
+              <p className="font-body text-base md:text-lg" style={{ color: "var(--ink-soft)", lineHeight: 1.9 }}>
+                {m.intro}
+              </p>
+            </Reveal>
+
+            <div className="mt-10">
+              {m.families.map((fam, i) => (
+                <Reveal key={fam.name} delay={i * 50}>
+                  <div className="group flex items-baseline gap-5 py-5" style={{ borderBottom: "1px solid var(--line)" }}>
+                    <span className="font-script flex-shrink-0" style={{ fontSize: "1.1rem", color: "var(--muted)", width: "2rem" }}>{fam.n}</span>
+                    <div className="flex-1">
+                      <h4 className="font-display uppercase text-base md:text-lg" style={{ color: "var(--ink)", letterSpacing: "0.02em" }}>{fam.name}</h4>
+                      <p className="mt-1 font-body text-sm" style={{ color: "var(--muted)", lineHeight: 1.6 }}>{fam.desc}</p>
+                    </div>
                   </div>
-                  <p className="mt-1.5 font-body text-sm" style={{ color: "var(--muted)", lineHeight: 1.6 }}>{dish.desc}</p>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              ))}
+            </div>
           </div>
         </div>
 
-        <p className="mt-16 text-center font-body text-xs tracking-wider mx-auto" style={{ color: "var(--muted)", letterSpacing: "0.1em", lineHeight: 1.9, maxWidth: "52ch" }}>
+        <p className="mt-14 text-center font-body text-xs tracking-wider mx-auto" style={{ color: "var(--muted)", letterSpacing: "0.1em", lineHeight: 1.9, maxWidth: "56ch" }}>
           {m.note}
         </p>
       </div>

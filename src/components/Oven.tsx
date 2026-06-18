@@ -14,7 +14,7 @@ export default function Oven() {
       {/* faint fire backdrop */}
       <div className="absolute inset-0 z-0" style={{ opacity: 0.16 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/fire-grill.jpg" alt="" className="w-full h-full object-cover" />
+        <img src="/images/fire-logs.jpg" alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ backgroundColor: "rgba(24,22,19,0.55)" }} />
       </div>
 
@@ -47,9 +47,9 @@ export default function Oven() {
         {/* Image + text */}
         <div className="mt-20 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
           <Reveal delay={120}>
-            <figure className="img-zoom w-full rounded-sm relative" style={{ aspectRatio: "4/3" }}>
+            <figure className="img-zoom img-duo w-full rounded-sm relative" style={{ aspectRatio: "4/3" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/pizza.png" alt={o.caption} className="w-full h-full object-cover" />
+              <img src="/images/venue-oven.jpg" alt={o.caption} className="w-full h-full object-cover" />
               <figcaption className="absolute bottom-4 left-4 eyebrow" style={{ color: "var(--paper)", fontSize: "0.6rem", textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
                 {o.caption}
               </figcaption>

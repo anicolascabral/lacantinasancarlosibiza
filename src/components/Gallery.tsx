@@ -8,6 +8,8 @@ import { useI18n } from "@/lib/i18n";
 export default function Gallery() {
   const { t } = useI18n();
   const g = t.gallery;
+  const [featured, ...rest] = g.tiles;
+
   return (
     <section className="py-28 md:py-40 paper-texture">
       <div className="px-6 max-w-6xl mx-auto">
@@ -28,10 +30,24 @@ export default function Gallery() {
           </Reveal>
         </div>
 
-        <div className="mt-16 columns-2 md:columns-3 gap-4 [&>*]:mb-4">
-          {g.tiles.map((tile, i) => (
-            <Reveal key={i} delay={(i % 3) * 70}>
-              <figure className="img-zoom img-duo relative w-full rounded-sm group" style={{ aspectRatio: tile.h === "tall" ? "3/4" : "4/3" }}>
+        <div className="mt-16 grid grid-cols-2 gap-4">
+          {/* Featured wide tile (oven) */}
+          {featured && (
+            <Reveal className="col-span-2">
+              <figure className="img-zoom img-duo relative w-full rounded-sm group aspect-[16/8] md:aspect-[16/6]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={featured.src} alt={featured.hint} className="w-full h-full object-cover" />
+                <figcaption className="absolute inset-0 flex items-end p-4 md:p-6" style={{ background: "linear-gradient(to top, rgba(24,22,19,0.6), transparent 55%)" }}>
+                  <span className="eyebrow translate-y-1 group-hover:translate-y-0 transition-transform duration-500" style={{ color: "var(--paper)", fontSize: "0.62rem" }}>{featured.hint}</span>
+                </figcaption>
+              </figure>
+            </Reveal>
+          )}
+
+          {/* 2x2 grid of the rest */}
+          {rest.map((tile, i) => (
+            <Reveal key={i} delay={(i % 2) * 80}>
+              <figure className="img-zoom img-duo relative w-full rounded-sm group aspect-square md:aspect-[4/3]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={tile.src} alt={tile.hint} className="w-full h-full object-cover" />
                 <figcaption className="absolute inset-0 flex items-end p-4" style={{ background: "linear-gradient(to top, rgba(24,22,19,0.6), transparent 50%)" }}>

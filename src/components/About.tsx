@@ -37,7 +37,7 @@ export default function About() {
           <Reveal delay={120} className="md:col-span-7">
             <figure className="img-zoom img-duo w-full rounded-sm relative" style={{ aspectRatio: "16/11" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/chef.jpg" alt={a.caption} className="w-full h-full object-cover" />
+              <img src="/images/venue-terrace.jpg" alt={a.caption} className="w-full h-full object-cover" />
               <figcaption className="absolute bottom-4 left-4 eyebrow" style={{ color: "var(--paper)", fontSize: "0.6rem", textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
                 {a.caption}
               </figcaption>

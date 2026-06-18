@@ -2,7 +2,7 @@
 
 import Reveal from "./Reveal";
 import { CasitaIcon } from "./Icons";
-import { waLink, INSTAGRAM } from "@/lib/site";
+import { waLink, INSTAGRAM, PHONE, PHONE_TEL, EMAIL, EMAIL_MAILTO } from "@/lib/site";
 import { useI18n } from "@/lib/i18n";
 
 export default function Reservation() {
@@ -70,6 +70,8 @@ export default function Reservation() {
             </div>
             <div>
               <p className="text-[11px] tracking-widest uppercase font-body font-bold mb-2" style={{ color: "var(--muted)", letterSpacing: "0.18em" }}>{r.contactLabel}</p>
+              <a href={PHONE_TEL} className="font-body text-sm block hover:opacity-60 transition-opacity" style={{ color: "var(--ink)" }}>{PHONE}</a>
+              <a href={EMAIL_MAILTO} className="font-body text-sm block hover:opacity-60 transition-opacity break-all" style={{ color: "var(--ink)" }}>{EMAIL}</a>
               <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="font-body text-sm block hover:opacity-60 transition-opacity" style={{ color: "var(--ink)" }}>@lacantinadesancarlos</a>
             </div>
           </div>
