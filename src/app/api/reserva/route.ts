@@ -68,9 +68,9 @@ function shell(opts: { heading: string; lead: string; rowsHtml: string; aside: s
     <tr><td align="center" style="padding:28px 14px">
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%">
         <!-- Header -->
-        <tr><td style="background:${INK};padding:34px 32px;text-align:center;border-radius:6px 6px 0 0">
-          <img src="${LOGO}" alt="${BRAND}" width="150" style="display:inline-block;width:150px;height:auto;border:0">
-          <div style="margin-top:14px;color:rgba(243,238,227,0.62);font:700 10px/1 Arial,sans-serif;letter-spacing:.22em;text-transform:uppercase">${esc(tagline)}</div>
+        <tr><td style="background:${INK};padding:30px 32px 22px;text-align:center;border-radius:6px 6px 0 0">
+          <img src="${LOGO}" alt="${BRAND}" width="138" style="display:inline-block;width:138px;height:auto;border:0">
+          <div style="margin-top:12px;color:rgba(243,238,227,0.72);font:700 10px/1 Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase">${esc(tagline)}</div>
         </td></tr>
         <!-- Body -->
         <tr><td style="background:${WHITE};padding:34px 32px;border-left:1px solid ${LINE};border-right:1px solid ${LINE}">
@@ -79,17 +79,17 @@ function shell(opts: { heading: string; lead: string; rowsHtml: string; aside: s
           ${opts.rowsHtml}
           <p style="margin:22px 0 0;color:${SOFT};font:14px/1.7 Arial,sans-serif">${opts.aside}</p>
         </td></tr>
-        <!-- Footer -->
-        <tr><td style="background:${INK};padding:24px 32px;border-radius:0 0 6px 6px">
-          <p style="margin:0 0 6px;color:rgba(243,238,227,0.82);font:700 11px/1.5 Arial,sans-serif;letter-spacing:.06em">${esc(BRAND)}</p>
-          <p style="margin:0;color:rgba(243,238,227,0.55);font:12px/1.7 Arial,sans-serif">
+        <!-- Footer (light, high-contrast) -->
+        <tr><td style="background:${CARD};padding:22px 32px;border:1px solid ${LINE};border-top:1px solid ${LINE};border-radius:0 0 6px 6px">
+          <p style="margin:0 0 6px;color:${INK};font:700 12px/1.5 Arial,sans-serif;letter-spacing:.04em">${esc(BRAND)}</p>
+          <p style="margin:0;color:${SOFT};font:12px/1.85 Arial,sans-serif">
             ${esc(ADDRESS)}<br>
             ${esc(hours)}<br>
-            <a href="tel:${PHONE.replace(/\s/g, "")}" style="color:rgba(243,238,227,0.78);text-decoration:none">${esc(PHONE)}</a>
+            <a href="tel:${PHONE.replace(/\s/g, "")}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(PHONE)}</a>
             &nbsp;·&nbsp;
-            <a href="${INSTAGRAM}" style="color:rgba(243,238,227,0.78);text-decoration:none">${esc(ig)}</a>
+            <a href="${INSTAGRAM}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(ig)}</a>
             &nbsp;·&nbsp;
-            <a href="mailto:${EMAIL}" style="color:rgba(243,238,227,0.78);text-decoration:none">${esc(EMAIL)}</a>
+            <a href="mailto:${EMAIL}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(EMAIL)}</a>
           </p>
         </td></tr>
       </table>
