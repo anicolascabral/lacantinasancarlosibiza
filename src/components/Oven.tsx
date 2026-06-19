@@ -50,7 +50,7 @@ export default function Oven() {
             <figure className="img-zoom img-duo w-full rounded-sm relative" style={{ aspectRatio: "4/3" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/images/venue-oven.jpg" alt={o.caption} className="w-full h-full object-cover" />
-              <figcaption className="absolute bottom-4 left-4 eyebrow" style={{ color: "var(--paper)", fontSize: "0.6rem", textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
+              <figcaption className="absolute bottom-4 right-4 text-right eyebrow" style={{ color: "var(--paper)", fontSize: "0.6rem", textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
                 {o.caption}
               </figcaption>
             </figure>
