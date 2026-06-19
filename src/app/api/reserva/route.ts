@@ -70,7 +70,7 @@ function shell(opts: { heading: string; lead: string; rowsHtml: string; aside: s
         <!-- Header -->
         <tr><td style="background:${INK};padding:30px 32px 22px;text-align:center;border-radius:6px 6px 0 0">
           <img src="${LOGO}" alt="${BRAND}" width="138" style="display:inline-block;width:138px;height:auto;border:0">
-          <div style="margin-top:12px;color:rgba(243,238,227,0.72);font:700 10px/1 Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase">${esc(tagline)}</div>
+          <div style="margin-top:12px;color:#E9E1D1;font:700 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.16em;text-transform:uppercase">${esc(tagline)}</div>
         </td></tr>
         <!-- Body -->
         <tr><td style="background:${WHITE};padding:34px 32px;border-left:1px solid ${LINE};border-right:1px solid ${LINE}">
@@ -133,7 +133,8 @@ export async function POST(request: Request) {
     await transporter.sendMail({
       from: `"${BRAND} · Reservas" <${user}>`,
       to: user,
-      replyTo: email || undefined,
+      // Reply / Reply-All from info@ goes straight to whoever booked.
+      replyTo: email ? { name, address: email } : undefined,
       subject: es ? `Nueva reserva · ${name}` : `New booking · ${name}`,
       text: `${es ? "Nueva solicitud de reserva desde la web" : "New booking request from the website"}:\n\n${tableText}\n`,
       html: shell({
