@@ -6,6 +6,11 @@ import { CasitaIcon } from "./Icons";
 import { EMAIL } from "@/lib/site";
 import { useI18n } from "@/lib/i18n";
 
+// Web3Forms is called from the browser (it sits behind Cloudflare and blocks
+// server-to-server calls). The access key is public by design — it can only
+// deliver to the verified inbox — and lives in a Vercel env var, not the repo.
+const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? "";
+
 type Status = "idle" | "sending" | "ok" | "error";
 
 export default function Reservation() {
@@ -45,31 +50,39 @@ export default function Reservation() {
     if (data.get("company")) return; // honeypot — bot filled the hidden field
     const get = (k: string) => (data.get(k) as string)?.trim() || "—";
 
+    // No key configured yet → open the mail app so nothing is ever lost.
+    if (!WEB3FORMS_KEY) {
+      mailtoFallback(get);
+      setStatus("ok");
+      return;
+    }
+
     setStatus("sending");
     try {
-      const res = await fetch("/api/reserva", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          company: (data.get("company") as string) || "",
-          name: get("name"),
-          email: get("email"),
-          phone: get("phone"),
-          date: get("date"),
-          time: get("time"),
-          guests: get("guests"),
-          message: get("message"),
-          labels: { name: f.name, email: f.email, phone: f.phone, date: f.date, time: f.time, guests: f.guests, message: f.message },
+          access_key: WEB3FORMS_KEY,
+          subject: "Reserva · La Cantina de San Carlos",
+          from_name: "Reservas · lacantinasancarlosibiza.com",
+          replyto: get("email"),
+          [f.name]: get("name"),
+          [f.email]: get("email"),
+          [f.phone]: get("phone"),
+          [f.date]: get("date"),
+          [f.time]: get("time"),
+          [f.guests]: get("guests"),
+          [f.message]: get("message"),
         }),
       });
-      const json = await res.json().catch(() => ({ ok: false }));
-      if (json.ok) {
+      const json = await res.json().catch(() => ({ success: false }));
+      if (json.success) {
         setStatus("ok");
         form.reset();
         return;
       }
-      // Endpoint not configured yet (or upstream failed) → open the mail app so
-      // the reservation is never lost.
+      // Upstream rejected → fall back to the mail app so the booking survives.
       mailtoFallback(get);
       setStatus("ok");
     } catch {
