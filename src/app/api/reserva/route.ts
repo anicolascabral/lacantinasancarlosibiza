@@ -8,8 +8,8 @@
 // Secrets live in Vercel → Settings → Environment Variables (Production):
 //   ZOHO_USER = info@lacantinasancarlosibiza.com
 //   ZOHO_PASS = <Zoho App Password>   (NOT the normal password)
-//   ZOHO_HOST = smtp.zoho.eu          (optional — default; use smtp.zoho.com if
-//                                       your Zoho account is on the US data center)
+//   ZOHO_HOST = smtppro.zoho.eu       (optional — default; org/Workplace accounts
+//                                       use the "pro" host. US: smtppro.zoho.com)
 // Until they're set the route reports "not_configured" and the form falls back
 // to opening the visitor's mail app, so a booking is never lost.
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   const pass = process.env.ZOHO_PASS;
   if (!user || !pass) return Response.json({ ok: false, error: "not_configured" }, { status: 503 });
 
-  const host = process.env.ZOHO_HOST || "smtp.zoho.eu";
+  const host = process.env.ZOHO_HOST || "smtppro.zoho.eu";
   const es = d.lang !== "en";
   const v = (s?: string) => (s && s.trim()) || "—";
   const name = v(d.name);
