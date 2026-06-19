@@ -55,21 +55,21 @@ export default function Hero() {
 
         <div className="hero-in mt-9 flex flex-col sm:flex-row items-center gap-4" style={{ animationDelay: "0.5s" }}>
           <a
-            href="#carta"
+            href="#reservas"
             className="group inline-flex items-center gap-3 px-8 py-4 text-xs tracking-widest uppercase font-body font-bold transition-opacity hover:opacity-85"
             style={{ backgroundColor: "var(--paper)", color: "var(--ink)", letterSpacing: "0.18em" }}
           >
-            {t.hero.viewMenu}
+            {t.hero.bookTable}
             <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>
           </a>
           <a
-            href="#reservas"
+            href="#carta"
             className="inline-flex items-center gap-3 px-8 py-4 text-xs tracking-widest uppercase font-body font-bold transition-colors"
             style={{ border: "1px solid rgba(243,238,227,0.45)", color: "var(--paper)", letterSpacing: "0.18em" }}
             onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--paper)")}
             onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(243,238,227,0.45)")}
           >
-            {t.hero.bookTable}
+            {t.hero.viewMenu}
           </a>
         </div>
       </div>

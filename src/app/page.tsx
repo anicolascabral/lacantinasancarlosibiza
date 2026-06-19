@@ -8,6 +8,7 @@ import Events from "@/components/Events";
 import Reservation from "@/components/Reservation";
 import Footer from "@/components/Footer";
 import ImageFocus from "@/components/ImageFocus";
+import MobileReserveBar from "@/components/MobileReserveBar";
 
 export default function Home() {
   return (
@@ -23,6 +24,7 @@ export default function Home() {
         <Reservation />
       </main>
       <Footer />
+      <MobileReserveBar />
       <ImageFocus />
     </>
   );

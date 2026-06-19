@@ -112,15 +112,15 @@ export default function Reservation() {
 
             <div className="field-group sm:col-span-2">
               <label className="field-label">{f.name}</label>
-              <input name="name" type="text" required placeholder={ph.name} className="field" />
+              <input name="name" type="text" required autoComplete="name" autoCapitalize="words" placeholder={ph.name} className="field" />
             </div>
             <div className="field-group">
               <label className="field-label">{f.email}</label>
-              <input name="email" type="email" required placeholder={ph.email} className="field" />
+              <input name="email" type="email" required inputMode="email" autoComplete="email" autoCapitalize="off" spellCheck={false} placeholder={ph.email} className="field" />
             </div>
             <div className="field-group">
               <label className="field-label">{f.phone}</label>
-              <input name="phone" type="tel" placeholder={ph.phone} className="field" />
+              <input name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder={ph.phone} className="field" />
             </div>
             <div className="field-group sm:col-span-2">
               <label className="field-label">{f.date}</label>
