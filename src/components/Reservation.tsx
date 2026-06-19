@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Reveal from "./Reveal";
 import { CasitaIcon } from "./Icons";
-import { EMAIL, WEB3FORMS_KEY } from "@/lib/site";
+import { EMAIL } from "@/lib/site";
 import { useI18n } from "@/lib/i18n";
 
 type Status = "idle" | "sending" | "ok" | "error";
@@ -29,53 +29,52 @@ export default function Reservation() {
       : `Couldn't send. Please email ${EMAIL} or try again.`,
   };
 
+  function mailtoFallback(get: (k: string) => string) {
+    const subject = `Reserva · La Cantina de San Carlos`;
+    const body =
+      `${f.name}: ${get("name")}\n${f.email}: ${get("email")}\n${f.phone}: ${get("phone")}\n` +
+      `${f.date}: ${get("date")}\n${f.time}: ${get("time")}\n${f.guests}: ${get("guests")}\n\n` +
+      `${f.message}:\n${get("message")}\n`;
+    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
     if (data.get("company")) return; // honeypot — bot filled the hidden field
     const get = (k: string) => (data.get(k) as string)?.trim() || "—";
-    const subject = `Reserva · La Cantina de San Carlos`;
-
-    // No key configured yet → graceful fallback so the form never dead-ends.
-    if (!WEB3FORMS_KEY) {
-      const body =
-        `${f.name}: ${get("name")}\n${f.email}: ${get("email")}\n${f.phone}: ${get("phone")}\n` +
-        `${f.date}: ${get("date")}\n${f.time}: ${get("time")}\n${f.guests}: ${get("guests")}\n\n` +
-        `${f.message}:\n${get("message")}\n`;
-      window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      setStatus("ok");
-      return;
-    }
 
     setStatus("sending");
     try {
-      const res = await fetch("https://api.web3forms.com/submit", {
+      const res = await fetch("/api/reserva", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject,
-          from_name: "Reservas · lacantinasancarlosibiza.com",
-          replyto: get("email"),
-          [f.name]: get("name"),
-          [f.email]: get("email"),
-          [f.phone]: get("phone"),
-          [f.date]: get("date"),
-          [f.time]: get("time"),
-          [f.guests]: get("guests"),
-          [f.message]: get("message"),
+          company: (data.get("company") as string) || "",
+          name: get("name"),
+          email: get("email"),
+          phone: get("phone"),
+          date: get("date"),
+          time: get("time"),
+          guests: get("guests"),
+          message: get("message"),
+          labels: { name: f.name, email: f.email, phone: f.phone, date: f.date, time: f.time, guests: f.guests, message: f.message },
         }),
       });
-      const json = await res.json();
-      if (json.success) {
+      const json = await res.json().catch(() => ({ ok: false }));
+      if (json.ok) {
         setStatus("ok");
         form.reset();
-      } else {
-        setStatus("error");
+        return;
       }
+      // Endpoint not configured yet (or upstream failed) → open the mail app so
+      // the reservation is never lost.
+      mailtoFallback(get);
+      setStatus("ok");
     } catch {
-      setStatus("error");
+      mailtoFallback(get);
+      setStatus("ok");
     }
   }
 
