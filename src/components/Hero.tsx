@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 export default function Hero() {
   const { t } = useI18n();
   return (
-    <section className="relative w-full overflow-hidden" style={{ height: "100svh", minHeight: "660px", backgroundColor: "var(--ink)" }}>
+    <section className="relative w-full overflow-hidden" style={{ height: "100lvh", minHeight: "660px", backgroundColor: "var(--ink)" }}>
       {/* Background photo — burning wood, slow zoom */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -75,7 +75,7 @@ export default function Hero() {
       </div>
 
       {/* Bottom marquee strip */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 py-4" style={{ borderTop: "1px solid rgba(243,238,227,0.15)" }}>
+      <div className="absolute bottom-0 left-0 right-0 z-10 py-4" style={{ borderTop: "1px solid rgba(243,238,227,0.15)", paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}>
         <Marquee
           items={t.hero.marquee}
           duration={34}

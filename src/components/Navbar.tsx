@@ -49,6 +49,9 @@ export default function Navbar() {
           backgroundColor: solid ? "rgba(236,229,214,0.92)" : "transparent",
           backdropFilter: solid ? "blur(10px)" : "none",
           borderBottom: solid ? "1px solid var(--line)" : "1px solid transparent",
+          paddingTop: "env(safe-area-inset-top)",
+          paddingLeft: "env(safe-area-inset-left)",
+          paddingRight: "env(safe-area-inset-right)",
         }}
       >
         {/* Thin announcement bar — collapses on scroll / when menu open */}
@@ -120,14 +123,16 @@ export default function Navbar() {
           backgroundColor: "var(--ink)",
           opacity: menuOpen ? 1 : 0,
           pointerEvents: menuOpen ? "auto" : "none",
+          paddingTop: "env(safe-area-inset-top)",
+          paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
         {/* Clear close (X) button, top-right */}
         <button
           onClick={() => setMenuOpen(false)}
           aria-label="Cerrar"
-          className="absolute top-5 right-6 md:right-10 flex items-center gap-3 text-xs tracking-widest uppercase font-body font-bold transition-opacity hover:opacity-70"
-          style={{ color: "var(--paper)", letterSpacing: "0.18em" }}
+          className="absolute right-6 md:right-10 flex items-center gap-3 text-xs tracking-widest uppercase font-body font-bold transition-opacity hover:opacity-70"
+          style={{ color: "var(--paper)", letterSpacing: "0.18em", top: "calc(env(safe-area-inset-top) + 1.25rem)" }}
         >
           <span className="hidden sm:inline">{lang === "es" ? "Cerrar" : "Close"}</span>
           <span className="relative block w-6 h-6">

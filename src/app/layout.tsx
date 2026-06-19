@@ -1,6 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { LangProvider } from "@/lib/i18n";
+
+// Edge-to-edge on notched iPhones (Pro/Pro Max): the dark hero fills behind the
+// status bar / Dynamic Island. Fixed UI is then inset via env(safe-area-inset-*).
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#181613",
+};
 
 // Resolve the canonical site URL so the OG image is always a live, fetchable
 // absolute URL (WhatsApp/Facebook need that). Uses Vercel's production URL when
@@ -38,6 +47,17 @@ export const metadata: Metadata = {
     title: "La Cantina de San Carlos — Ibiza",
     description: "Cocina de fuego en el corazón de San Carlos, Ibiza.",
     images: ["/og.jpg"],
+  },
+  // "Add to Home Screen" → runs full-screen (no Safari bars), status bar
+  // translucent over the dark hero. The only way to truly remove browser chrome.
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "La Cantina",
+  },
+  other: {
+    // Legacy iOS flag — still required for standalone "Add to Home Screen".
+    "apple-mobile-web-app-capable": "yes",
   },
 };
 

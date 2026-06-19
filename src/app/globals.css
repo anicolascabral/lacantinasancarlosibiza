@@ -72,14 +72,24 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  /* iOS 26 Safari samples the page background for the "color extension" behind
+     the status bar and the floating toolbar. Every section paints its own
+     background, so the root can be dark → edges stay immersive, never cream. */
+  background-color: var(--ink);
 }
 
 body {
-  background-color: var(--paper);
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  background-color: var(--ink);
   color: var(--ink);
   font-family: 'Satoshi', 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
 }
 
 .font-display {
@@ -321,11 +331,15 @@ body {
 /* ===== Premium form fields ===== */
 .field {
   width: 100%;
+  /* Uniform height so native date/time inputs match the text fields and never
+     collapse/clip on iOS. */
+  min-height: 3.35rem;
   background: var(--white);
   border: 1px solid var(--line);
   color: var(--ink);
   padding: 0.95rem 1rem;
-  font-size: 0.9rem;
+  /* 16px min — anything smaller makes iOS Safari auto-zoom (and pan) on focus. */
+  font-size: 16px;
   font-family: 'Satoshi', 'Helvetica Neue', Arial, sans-serif;
   border-radius: 3px;
   outline: none;
@@ -339,6 +353,25 @@ body {
   border-color: var(--ink);
   background: var(--paper-2);
   box-shadow: 0 0 0 3px rgba(24,22,19,0.06);
+}
+/* Native date / time inputs on iOS — reset the platform chrome and stop the
+   value text from being vertically clipped (a long-standing Safari bug). */
+input[type="date"].field,
+input[type="time"].field {
+  -webkit-appearance: none;
+  appearance: none;
+  display: flex;
+  align-items: center;
+}
+.field::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+  min-height: 1.4em;
+  line-height: 1.4;
+}
+.field::-webkit-datetime-edit {
+  padding: 0;
+  line-height: 1.4;
 }
 select.field {
   appearance: none;
