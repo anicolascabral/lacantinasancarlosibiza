@@ -52,7 +52,7 @@ function detailsTable(rows: [string, string][]) {
       ([k, val], i) =>
         `<tr>` +
         `<td style="padding:11px 16px;border-top:${i === 0 ? "0" : `1px solid ${LINE}`};color:${MUTED};font:700 11px/1.4 Arial,sans-serif;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;vertical-align:top">${esc(k)}</td>` +
-        `<td style="padding:11px 16px 11px 0;border-top:${i === 0 ? "0" : `1px solid ${LINE}`};color:${INK};font:15px/1.55 Georgia,'Times New Roman',serif">${esc(val)}</td>` +
+        `<td style="padding:11px 16px 11px 0;border-top:${i === 0 ? "0" : `1px solid ${LINE}`};color:${INK};font:600 15px/1.55 Arial,Helvetica,sans-serif">${esc(val)}</td>` +
         `</tr>`,
     )
     .join("");
@@ -74,7 +74,7 @@ function shell(opts: { heading: string; lead: string; rowsHtml: string; aside: s
         </td></tr>
         <!-- Body -->
         <tr><td style="background:${WHITE};padding:34px 32px;border-left:1px solid ${LINE};border-right:1px solid ${LINE}">
-          <h1 style="margin:0 0 14px;color:${INK};font:400 24px/1.25 Georgia,'Times New Roman',serif">${esc(opts.heading)}</h1>
+          <h1 style="margin:0 0 14px;color:${INK};font:700 22px/1.3 Arial,Helvetica,sans-serif">${esc(opts.heading)}</h1>
           <p style="margin:0 0 24px;color:${SOFT};font:15px/1.7 Arial,sans-serif">${opts.lead}</p>
           ${opts.rowsHtml}
           <p style="margin:22px 0 0;color:${SOFT};font:14px/1.7 Arial,sans-serif">${opts.aside}</p>
