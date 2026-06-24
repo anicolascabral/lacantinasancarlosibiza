@@ -33,6 +33,7 @@ const LINE = "#e2dac9";
 
 type Payload = {
   company?: string; // honeypot
+  turnstileToken?: string; // Cloudflare Turnstile
   name?: string;
   email?: string;
   phone?: string;
@@ -42,6 +43,25 @@ type Payload = {
   message?: string;
   lang?: "es" | "en";
 };
+
+// Verify the Cloudflare Turnstile token server-side. Returns true when there's
+// no secret configured (feature off) so the form keeps working until set up.
+async function verifyTurnstile(token: string | undefined): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return true;
+  if (!token) return false;
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ secret, response: token }),
+    });
+    const json = (await res.json()) as { success?: boolean };
+    return !!json.success;
+  } catch {
+    return false;
+  }
+}
 
 const esc = (s: string) =>
   s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
@@ -106,6 +126,11 @@ export async function POST(request: Request) {
   }
 
   if (d.company) return Response.json({ ok: true }); // honeypot — silently drop
+
+  // Bot gate — reject submissions that fail the CAPTCHA (when configured).
+  if (!(await verifyTurnstile(d.turnstileToken))) {
+    return Response.json({ ok: false, error: "captcha" }, { status: 400 });
+  }
 
   const user = process.env.ZOHO_USER;
   const pass = process.env.ZOHO_PASS;

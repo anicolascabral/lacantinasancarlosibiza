@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>La Cantina de San Carlos · Manual de Identidad de Marca</title>
+<style>
+  /* ===== Brand fonts (self-hosted from the project) ===== */
+  @font-face{font-family:'Clash Display';src:url('../public/fonts/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff2') format('woff2');font-weight:500;font-display:swap}
+  @font-face{font-family:'Clash Display';src:url('../public/fonts/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Clash Display';src:url('../public/fonts/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2') format('woff2');font-weight:700;font-display:swap}
+  @font-face{font-family:'Satoshi';src:url('../public/fonts/KFIAZD4RUMEZIYV6FQ3T3GP5PDBDB6JY.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Satoshi';src:url('../public/fonts/7AHDUZ4A7LFLVFUIFSARGIWCRQJHISQP.woff2') format('woff2');font-weight:500;font-display:swap}
+  @font-face{font-family:'Satoshi';src:url('../public/fonts/GHM6WVH6MILNYOOCXHXB5GTSGNTMGXZR.woff2') format('woff2');font-weight:700;font-display:swap}
+  @font-face{font-family:'Satoshi';src:url('../public/fonts/J64QX5IPOHK56I2KYUNBQ5M2XWZEYKYX.woff2') format('woff2');font-weight:900;font-display:swap}
+  @font-face{font-family:'Leander';src:url('../public/fonts/Leander.ttf') format('truetype');font-weight:400;font-display:swap}
+
+  :root{
+    --paper:#ECE5D6; --paper-2:#F3EEE3; --white:#FBF9F4;
+    --ink:#181613; --ink-soft:#4A453E; --muted:#8C857A; --line:rgba(24,22,19,0.14);
+    /* accent palette derived from fire & island */
+    --ember:#C8552B; --terracotta:#B5613F; --charcoal:#2B2723;
+    --olive:#6E6E43; --sea:#3E6B6E; --sand:#D8C9A8; --wine:#6E2A33;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-family:'Satoshi',system-ui,sans-serif;color:var(--ink);background:#5a544a}
+  .page{
+    width:210mm;min-height:297mm;background:var(--paper);margin:14px auto;padding:22mm 20mm;
+    position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.35);display:flex;flex-direction:column;
+  }
+  h1,h2,h3,.display{font-family:'Clash Display',serif;font-weight:600;letter-spacing:-.02em;line-height:1.04}
+  .script{font-family:'Leander',cursive;font-weight:400}
+  .eyebrow{font-family:'Satoshi';font-weight:700;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+  p{color:var(--ink-soft);line-height:1.6;font-size:13px}
+  .lead{font-size:15px;color:var(--ink-soft);line-height:1.7}
+  .rule{height:1px;background:var(--line);width:100%;margin:14px 0}
+  .pagenum{position:absolute;bottom:13mm;right:20mm;font-size:10px;letter-spacing:.2em;color:var(--muted)}
+  .foot{position:absolute;bottom:13mm;left:20mm;font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+  .sectiontitle{font-size:34px;margin-top:10px}
+
+  .cover{background:var(--ink);color:var(--paper);justify-content:space-between}
+  .cover .eyebrow{color:rgba(236,229,214,.55)}
+  .cover h1{font-size:60px;color:var(--paper)}
+  .cover .logo{width:120px}
+  .cover p{color:rgba(236,229,214,.72)}
+  .cover .pagenum,.cover .foot{color:rgba(236,229,214,.45)}
+
+  .dark{background:var(--ink);color:var(--paper)}
+  .dark .eyebrow{color:rgba(236,229,214,.5)}
+  .dark h1,.dark h2,.dark h3{color:var(--paper)}
+  .dark p{color:rgba(236,229,214,.72)}
+  .dark .rule{background:rgba(236,229,214,.18)}
+  .dark .pagenum,.dark .foot{color:rgba(236,229,214,.4)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+  /* TOC */
+  ul.toc{list-style:none;margin-top:8px}
+  ul.toc li{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+  ul.toc li span:first-child{font-family:'Clash Display';font-weight:500}
+  ul.toc li span:last-child{color:var(--muted)}
+
+  /* swatches */
+  .swatch{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--white)}
+  .swatch .chip{height:84px}
+  .swatch .meta{padding:9px 11px}
+  .swatch .name{font-family:'Clash Display';font-weight:600;font-size:13px}
+  .swatch .hex{font-size:10px;color:var(--muted);letter-spacing:.04em;margin-top:3px;line-height:1.5}
+
+  .logobox{background:var(--white);border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;height:150px}
+  .logobox.b{background:var(--ink)}
+  .logobox img{max-width:60%;max-height:60%}
+  .caption{font-size:10.5px;color:var(--muted);margin-top:6px;letter-spacing:.04em;line-height:1.5}
+
+  .markrow{display:flex;gap:16px}
+  .markrow .m{flex:1;border:1px solid var(--line);border-radius:8px;background:var(--white);height:110px;display:flex;align-items:center;justify-content:center}
+  .markrow .m img{max-width:52%;max-height:52%}
+
+  .typeblock{border:1px solid var(--line);border-radius:8px;padding:16px 18px;background:var(--white)}
+  .do,.dont{border-radius:8px;padding:13px 15px;font-size:12px;font-weight:600;line-height:1.45}
+  .do{background:rgba(31,107,50,.08);color:#1f6b32;border:1px solid rgba(31,107,50,.3)}
+  .dont{background:rgba(154,43,43,.07);color:#9a2b2b;border:1px solid rgba(154,43,43,.3)}
+  ul.clean{list-style:none}
+  ul.clean li{padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-soft)}
+  ul.clean li:last-child{border-bottom:none}
+  ul.feat{list-style:none}
+  ul.feat li{padding:8px 0 8px 20px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);position:relative}
+  ul.feat li:before{content:"";position:absolute;left:0;top:14px;width:7px;height:7px;background:var(--ember);border-radius:50%}
+  ul.feat li:last-child{border-bottom:none}
+
+  .big-quote{font-family:'Clash Display';font-weight:600;font-size:30px;line-height:1.15;letter-spacing:-.02em}
+  .photo{border-radius:8px;overflow:hidden}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .phrase{background:var(--white);border:1px solid var(--line);border-left:3px solid var(--ember);border-radius:6px;padding:12px 14px;margin-bottom:9px}
+  .phrase .es{font-family:'Clash Display';font-weight:500;font-size:15px;color:var(--ink)}
+  .phrase .en{font-size:11.5px;color:var(--muted);margin-top:3px;font-style:italic}
+
+  .tag{display:inline-block;background:var(--white);border:1px solid var(--line);border-radius:99px;padding:5px 11px;font-size:11px;color:var(--ink-soft);margin:0 5px 7px 0}
+  .pillcard{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+  .pillcard .n{font-family:'Clash Display';font-weight:700;font-size:22px;color:var(--ember)}
+  .pillcard h3{font-size:15px;margin-top:4px}
+  .pillcard p{font-size:11.5px;margin-top:5px}
+
+  /* instagram grid mock */
+  .igrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;border:1px solid var(--line);padding:5px;background:var(--white);border-radius:8px}
+  .igrid .cell{aspect-ratio:1/1;overflow:hidden}
+  .igrid .cell img{width:100%;height:100%;object-fit:cover;display:block}
+  .igrid .cell.txt{display:flex;align-items:center;justify-content:center;background:var(--ink);color:var(--paper);text-align:center;padding:8px}
+  .igrid .cell.txt .script{font-size:22px;line-height:1}
+  .igrid .cell.txt .small{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(236,229,214,.6)}
+
+  .tmpl{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:12px}
+  .tmpl .lbl{font-weight:700;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ember)}
+  .tmpl p{font-size:12px;margin-top:6px;color:var(--ink-soft)}
+
+  @media print{
+    body{background:#fff}
+    .page{margin:0;box-shadow:none;page-break-after:always}
+    .page:last-child{page-break-after:auto}
+  }
+  @page{size:A4;margin:0}
+</style>
+</head>
+<body>
+
+<!-- 01 COVER -->
+<section class="page cover">
+  <div><img class="logo" src="../public/images/logo-mark-white.png" alt="logo"/></div>
+  <div>
+    <div class="eyebrow">Manual de Identidad de Marca · Edición 2026</div>
+    <h1 style="margin-top:14px">La Cantina<br/>de San Carlos</h1>
+    <p style="margin-top:18px;max-width:60%">Cocina de fuego en el corazón de San Carlos, Ibiza. Guía completa de marca: relato, logotipo, color, tipografía, fotografía, voz y redes sociales.</p>
+  </div>
+  <div class="foot">lacantinasancarlosibiza.com</div>
+  <div class="pagenum">01</div>
+</section>
+
+<!-- 02 INDEX -->
+<section class="page">
+  <div class="eyebrow">Contenido</div>
+  <h2 class="sectiontitle">Índice</h2>
+  <div class="rule"></div>
+  <ul class="toc">
+    <li><span>01 · Manifiesto</span><span>04</span></li>
+    <li><span>02 · Esencia y valores</span><span>05</span></li>
+    <li><span>03 · Personalidad de marca</span><span>06</span></li>
+    <li><span>04 · Logotipo principal</span><span>07</span></li>
+    <li><span>05 · Variaciones e iconos</span><span>08</span></li>
+    <li><span>06 · Área de seguridad y usos incorrectos</span><span>09</span></li>
+    <li><span>07 · Paleta principal</span><span>10</span></li>
+    <li><span>08 · Paleta de acento (fuego &amp; isla)</span><span>11</span></li>
+    <li><span>09 · Tipografía</span><span>12</span></li>
+    <li><span>10 · Jerarquía tipográfica</span><span>13</span></li>
+    <li><span>11 · Dirección de fotografía</span><span>14</span></li>
+    <li><span>12 · Tono de voz</span><span>15</span></li>
+    <li><span>13 · Banco de frases (ES / EN)</span><span>16</span></li>
+    <li><span>14 · Instagram · rejilla y estética</span><span>17</span></li>
+    <li><span>15 · Instagram · pilares de contenido</span><span>18</span></li>
+    <li><span>16 · Instagram · ideas y plantillas</span><span>19</span></li>
+    <li><span>17 · Aplicación y contacto</span><span>20</span></li>
+  </ul>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">02</div>
+</section>
+
+<!-- 03 MANIFESTO -->
+<section class="page dark" style="justify-content:center;text-align:center;align-items:center">
+  <div class="eyebrow">Manifiesto</div>
+  <div class="big-quote" style="font-size:38px;color:var(--paper);max-width:80%;margin-top:18px">
+    Encendemos la leña<br/>antes de que salga el sol.
+  </div>
+  <p style="max-width:62%;margin-top:22px">No tenemos prisa. Dejamos que el fuego, el tiempo y el producto de la isla hagan el trabajo. Lo demás —el ruido, los superlativos, los filtros— sobra. Aquí se come como en casa, junto a la brasa, mirando San Carlos.</p>
+  <div class="script" style="font-size:46px;color:var(--ember);margin-top:26px">cocina de fuego</div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">03</div>
+</section>
+
+<!-- 04 ESSENCE -->
+<section class="page">
+  <div class="eyebrow">01 · Esencia</div>
+  <h2 class="sectiontitle">La idea de marca</h2>
+  <div class="rule"></div>
+  <div class="grid2" style="margin-top:6px">
+    <div>
+      <p class="lead">La Cantina de San Carlos es <strong>cocina de fuego</strong>: producto de mercado, brasa y horno de leña en un pueblo del norte de Ibiza.</p>
+      <p style="margin-top:12px">La identidad es deliberadamente sobria — <strong>blanco y negro sobre papel cálido</strong>. El color nunca lo pone la interfaz; lo pone la comida y el lugar a través de la fotografía. Así cada plato destaca y la marca envejece bien.</p>
+    </div>
+    <div>
+      <div class="photo" style="height:230px"><img src="../public/images/fire-logs.jpg" alt=""/></div>
+      <div class="caption">El fuego es el centro de todo: del relato, del menú y de la imagen.</div>
+    </div>
+  </div>
+  <div class="rule" style="margin-top:18px"></div>
+  <div class="eyebrow">Pilares</div>
+  <div class="grid3" style="margin-top:10px">
+    <div class="pillcard"><div class="n">01</div><h3>Artesanal</h3><p>Hecho a mano, con fuego real y horno de leña.</p></div>
+    <div class="pillcard"><div class="n">02</div><h3>Mediterráneo</h3><p>Producto local de Ibiza: mar, huerto y mercado.</p></div>
+    <div class="pillcard"><div class="n">03</div><h3>Cálido</h3><p>Cercano y sin pretensiones. Como en casa.</p></div>
+  </div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">04</div>
+</section>
+
+<!-- 05 PERSONALITY -->
+<section class="page">
+  <div class="eyebrow">02 · Personalidad</div>
+  <h2 class="sectiontitle">Cómo es la marca</h2>
+  <div class="rule"></div>
+  <p>Si La Cantina fuese una persona, sería un anfitrión tranquilo que conoce su oficio. No grita, no presume; te sienta a la mesa y deja que el producto hable.</p>
+  <div class="grid2" style="margin-top:16px">
+    <div>
+      <div class="eyebrow">La marca es</div>
+      <ul class="feat">
+        <li>Honesta y directa</li>
+        <li>Cálida y acogedora</li>
+        <li>Artesana y paciente</li>
+        <li>Mediterránea y luminosa</li>
+        <li>Segura, sin alardes</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">La marca no es</div>
+      <ul class="clean">
+        <li>✕ Pretenciosa ni exclusiva</li>
+        <li>✕ Ruidosa ni recargada</li>
+        <li>✕ Fría ni corporativa</li>
+        <li>✕ Llena de superlativos vacíos</li>
+        <li>✕ De moda pasajera</li>
+      </ul>
+    </div>
+  </div>
+  <div class="rule" style="margin-top:18px"></div>
+  <div class="big-quote" style="font-size:26px">«El color lo pone el fuego, nunca la interfaz.»</div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">05</div>
+</section>
+
+<!-- 06 LOGO PRIMARY -->
+<section class="page">
+  <div class="eyebrow">04 · Logotipo</div>
+  <h2 class="sectiontitle">El logotipo</h2>
+  <div class="rule"></div>
+  <div class="grid2">
+    <div>
+      <div class="logobox"><img src="../public/images/logo-mark-black.png" alt="logo negro"/></div>
+      <div class="caption">Versión principal — tinta sobre papel cálido. Uso por defecto.</div>
+    </div>
+    <div>
+      <div class="logobox b"><img src="../public/images/logo-mark-white.png" alt="logo blanco"/></div>
+      <div class="caption">Versión en negativo — sobre fondo oscuro o fotografía con buen contraste.</div>
+    </div>
+  </div>
+  <div class="rule" style="margin-top:20px"></div>
+  <p>El logotipo es el activo central de la marca. Preséntalo siempre con aire a su alrededor y sobre fondos limpios. Cuando aparezca sobre foto, asegúrate de que la zona tenga contraste suficiente para leerlo sin esfuerzo.</p>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">06</div>
+</section>
+
+<!-- 07 VARIATIONS / ICONS -->
+<section class="page">
+  <div class="eyebrow">05 · Variaciones</div>
+  <h2 class="sectiontitle">Iconos y marcas auxiliares</h2>
+  <div class="rule"></div>
+  <p>El isotipo y tres iconos de trazo simple refuerzan los pilares del negocio. Se usan en tinta, a un solo color, nunca rellenos de color.</p>
+  <div class="markrow" style="margin-top:16px">
+    <div style="flex:1"><div class="m"><img src="../public/images/logo-icon-white.png" style="filter:invert(1)" alt="isotipo"/></div><div class="caption" style="text-align:center">Isotipo</div></div>
+    <div style="flex:1"><div class="m"><img src="../public/images/mark-horno.png" alt="horno"/></div><div class="caption" style="text-align:center">Horno de leña</div></div>
+    <div style="flex:1"><div class="m"><img src="../public/images/mark-casita.png" alt="casa"/></div><div class="caption" style="text-align:center">El local</div></div>
+    <div style="flex:1"><div class="m"><img src="../public/images/mark-palm.png" alt="palmera"/></div><div class="caption" style="text-align:center">Ibiza</div></div>
+  </div>
+  <div class="rule" style="margin-top:20px"></div>
+  <div class="eyebrow">Cuándo usar cada uno</div>
+  <ul class="clean" style="margin-top:8px">
+    <li><strong>Isotipo</strong> — avatar de redes, favicon, sellos pequeños donde no cabe el logo completo.</li>
+    <li><strong>Horno</strong> — todo lo relacionado con brasa, cocción y carta caliente.</li>
+    <li><strong>Casa</strong> — el local, reservas, «cómo llegar», horarios.</li>
+    <li><strong>Palmera</strong> — Ibiza, terraza, ambiente y temporada.</li>
+  </ul>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">07</div>
+</section>
+
+<!-- 08 CLEARSPACE / MISUSE -->
+<section class="page">
+  <div class="eyebrow">06 · Protección</div>
+  <h2 class="sectiontitle">Área de seguridad y usos</h2>
+  <div class="rule"></div>
+  <div class="eyebrow">Área de seguridad y tamaño mínimo</div>
+  <p style="margin-top:8px">Mantén alrededor del logo un margen libre equivalente a la altura de la palabra «Cantina». No coloques texto ni otros elementos dentro de esa zona. Tamaño mínimo: <strong>22 mm</strong> de ancho en impreso, <strong>120 px</strong> en pantalla.</p>
+  <div class="rule" style="margin-top:18px"></div>
+  <div class="eyebrow">Usos incorrectos</div>
+  <div class="grid2" style="margin-top:10px">
+    <div class="dont">✕ No deformar, rotar ni alterar las proporciones.</div>
+    <div class="dont">✕ No recolorear con colores ajenos a la paleta.</div>
+    <div class="dont">✕ No añadir sombras, contornos ni efectos.</div>
+    <div class="dont">✕ No usar la versión en tinta sobre fondos oscuros.</div>
+    <div class="dont">✕ No colocar sobre fotos sin contraste suficiente.</div>
+    <div class="dont">✕ No estirar para rellenar un espacio.</div>
+  </div>
+  <div class="rule" style="margin-top:18px"></div>
+  <div class="do">✓ Mucho aire alrededor, fondos limpios, un solo color de la paleta y siempre legible.</div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">08</div>
+</section>
+
+<!-- 09 PRIMARY COLOR -->
+<section class="page">
+  <div class="eyebrow">07 · Color</div>
+  <h2 class="sectiontitle">Paleta principal</h2>
+  <div class="rule"></div>
+  <p style="margin-bottom:16px">Mínima y atemporal. El papel cálido es la base; la tinta casi negra da el contraste; los grises suavizan los textos secundarios. El protagonismo cromático se reserva para la fotografía.</p>
+  <div class="grid3">
+    <div class="swatch"><div class="chip" style="background:#ECE5D6"></div><div class="meta"><div class="name">Papel</div><div class="hex">HEX #ECE5D6<br/>RGB 236·229·214</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#F3EEE3"></div><div class="meta"><div class="name">Papel claro</div><div class="hex">HEX #F3EEE3<br/>RGB 243·238·227</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#FBF9F4"></div><div class="meta"><div class="name">Hueso</div><div class="hex">HEX #FBF9F4<br/>RGB 251·249·244</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#181613"></div><div class="meta"><div class="name">Tinta</div><div class="hex">HEX #181613<br/>RGB 24·22·19</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#4A453E"></div><div class="meta"><div class="name">Tinta suave</div><div class="hex">HEX #4A453E<br/>RGB 74·69·62</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#8C857A"></div><div class="meta"><div class="name">Apagado</div><div class="hex">HEX #8C857A<br/>RGB 140·133·122</div></div></div>
+  </div>
+  <div class="rule" style="margin-top:22px"></div>
+  <div class="grid2">
+    <div class="do">PROPORCIÓN — Papel 70% · Tinta 20% · Grises 10%. El color llega por la fotografía.</div>
+    <div class="dont">EVITA — Fondos saturados, degradados llamativos o acentos cromáticos en la interfaz principal.</div>
+  </div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">09</div>
+</section>
+
+<!-- 10 ACCENT COLOR -->
+<section class="page">
+  <div class="eyebrow">08 · Color</div>
+  <h2 class="sectiontitle">Paleta de acento</h2>
+  <div class="rule"></div>
+  <p style="margin-bottom:16px">Una paleta secundaria <strong>derivada del fuego y de la isla</strong>. Pensada para redes sociales, gráficas de temporada y detalles puntuales — nunca para sustituir el blanco y negro de la marca. Úsala con moderación, como una chispa.</p>
+  <div class="grid4">
+    <div class="swatch"><div class="chip" style="background:#C8552B"></div><div class="meta"><div class="name">Brasa</div><div class="hex">#C8552B</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#B5613F"></div><div class="meta"><div class="name">Terracota</div><div class="hex">#B5613F</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#2B2723"></div><div class="meta"><div class="name">Carbón</div><div class="hex">#2B2723</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#6E6E43"></div><div class="meta"><div class="name">Oliva</div><div class="hex">#6E6E43</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#3E6B6E"></div><div class="meta"><div class="name">Mar</div><div class="hex">#3E6B6E</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#D8C9A8"></div><div class="meta"><div class="name">Arena</div><div class="hex">#D8C9A8</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#6E2A33"></div><div class="meta"><div class="name">Vino</div><div class="hex">#6E2A33</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#ECE5D6"></div><div class="meta"><div class="name">Papel</div><div class="hex">base común</div></div></div>
+  </div>
+  <div class="rule" style="margin-top:20px"></div>
+  <div class="grid2">
+    <div class="do">✓ Brasa y terracota para llamadas a la acción puntuales y destacados en stories.</div>
+    <div class="dont">✕ No mezclar más de un color de acento por pieza ni usarlos en bloques grandes.</div>
+  </div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">10</div>
+</section>
+
+<!-- 11 TYPOGRAPHY -->
+<section class="page">
+  <div class="eyebrow">09 · Tipografía</div>
+  <h2 class="sectiontitle">Sistema tipográfico</h2>
+  <div class="rule"></div>
+  <div class="typeblock">
+    <div class="eyebrow">Display · Titulares</div>
+    <div class="display" style="font-size:44px;margin-top:8px">Clash Display</div>
+    <div class="display" style="font-size:20px;font-weight:500;margin-top:6px">Aa Bb Cc · 0123456789 · €</div>
+    <p style="margin-top:8px" class="caption">Pesos 500 / 600 / 700. Nombres, titulares y cifras destacadas.</p>
+  </div>
+  <div class="typeblock" style="margin-top:14px">
+    <div class="eyebrow">Texto · Cuerpo e interfaz</div>
+    <div style="font-family:'Satoshi';font-weight:700;font-size:28px;margin-top:8px">Satoshi</div>
+    <div style="font-family:'Satoshi';font-size:13px;margin-top:6px">Cocina de fuego en el corazón de San Carlos, Ibiza. Producto de mercado, brasa y horno de leña.</div>
+    <p style="margin-top:8px" class="caption">Pesos 400 / 500 / 700 / 900. Párrafos, botones, formularios y navegación.</p>
+  </div>
+  <div class="typeblock" style="margin-top:14px">
+    <div class="eyebrow">Acento · Manuscrito</div>
+    <div class="script" style="font-size:40px;margin-top:2px">Leander &mdash; cocina de fuego</div>
+    <p style="margin-top:2px" class="caption">Solo acento decorativo puntual. Nunca texto corrido ni títulos largos.</p>
+  </div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">11</div>
+</section>
+
+<!-- 12 TYPE HIERARCHY -->
+<section class="page">
+  <div class="eyebrow">10 · Tipografía</div>
+  <h2 class="sectiontitle">Jerarquía y escala</h2>
+  <div class="rule"></div>
+  <div style="margin-top:6px">
+    <div class="caption">H1 · Clash Display 600 · 48px</div>
+    <div class="display" style="font-size:48px">Cocina de fuego</div>
+  </div>
+  <div style="margin-top:16px">
+    <div class="caption">H2 · Clash Display 600 · 30px</div>
+    <div class="display" style="font-size:30px">Producto, brasa y tiempo</div>
+  </div>
+  <div style="margin-top:16px">
+    <div class="caption">H3 · Clash Display 500 · 20px</div>
+    <div class="display" style="font-size:20px;font-weight:500">Del huerto y del mar, al fuego</div>
+  </div>
+  <div style="margin-top:16px">
+    <div class="caption">Cuerpo · Satoshi 400 · 13–15px · interlínea 1.6</div>
+    <p class="lead">Encendemos la leña antes de que salga el sol. Dejamos que el fuego y el tiempo hagan el resto, con el mejor producto de la isla.</p>
+  </div>
+  <div style="margin-top:16px">
+    <div class="caption">Antetítulo · Satoshi 700 · 10px · +280 tracking · MAYÚSCULAS</div>
+    <div class="eyebrow" style="margin-top:4px">Reservas · San Carlos · Ibiza</div>
+  </div>
+  <div class="rule" style="margin-top:18px"></div>
+  <p class="caption">Regla práctica: un solo titular Clash por pieza; el resto en Satoshi. Leander, como mucho una palabra o expresión por composición.</p>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">12</div>
+</section>
+
+<!-- 13 PHOTOGRAPHY -->
+<section class="page">
+  <div class="eyebrow">11 · Fotografía</div>
+  <h2 class="sectiontitle">Dirección de fotografía</h2>
+  <div class="rule"></div>
+  <p>La fotografía aporta todo el color de la marca. Luz natural, tonos cálidos, primeros planos de producto y fuego. Encuadres honestos, sin filtros artificiales ni saturación excesiva.</p>
+  <div class="grid3" style="margin-top:14px">
+    <div class="photo" style="height:130px"><img src="../public/images/fire-logs.jpg" alt=""/></div>
+    <div class="photo" style="height:130px"><img src="../public/images/whole-fish.jpg" alt=""/></div>
+    <div class="photo" style="height:130px"><img src="../public/images/venue-oven.jpg" alt=""/></div>
+    <div class="photo" style="height:130px"><img src="../public/images/meat-grill.jpg" alt=""/></div>
+    <div class="photo" style="height:130px"><img src="../public/images/venue-terrace.jpg" alt=""/></div>
+    <div class="photo" style="height:130px"><img src="../public/images/wine.jpg" alt=""/></div>
+  </div>
+  <div class="rule" style="margin-top:18px"></div>
+  <div class="grid2">
+    <div class="do">✓ Luz natural · humo y brasa reales · manos y proceso · vapor · texturas · sobremesa</div>
+    <div class="dont">✕ Flash duro · filtros de color · fondos desordenados · platos fríos sin vida · stock genérico</div>
+  </div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">13</div>
+</section>
+
+<!-- 14 VOICE -->
+<section class="page">
+  <div class="eyebrow">12 · Voz</div>
+  <h2 class="sectiontitle">Tono de voz</h2>
+  <div class="rule"></div>
+  <div class="grid2">
+    <div>
+      <div class="eyebrow">Principios</div>
+      <ul class="feat">
+        <li>Cercano y cálido, nunca pomposo.</li>
+        <li>Frases cortas. El producto habla solo.</li>
+        <li>Bilingüe español / inglés en toda comunicación.</li>
+        <li>Honesto: «cocina de fuego», no superlativos vacíos.</li>
+        <li>Sensorial: humo, brasa, leña, mar, huerto.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">Sí / No</div>
+      <ul class="clean">
+        <li>✓ «Pescado del día a la brasa.»</li>
+        <li>✕ «¡La mejor experiencia gastronómica de la isla!»</li>
+        <li>✓ «La leña no tiene prisa.»</li>
+        <li>✕ «Disfruta de una explosión de sabores únicos.»</li>
+        <li>✓ «Reserva tu mesa junto al fuego.»</li>
+      </ul>
+    </div>
+  </div>
+  <div class="rule" style="margin-top:20px"></div>
+  <p class="caption">En inglés, mismo tono: directo y cálido. Evita la traducción literal — adapta la idea («Cooked over fire», no «Fire kitchen»).</p>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">14</div>
+</section>
+
+<!-- 15 PHRASE BANK -->
+<section class="page">
+  <div class="eyebrow">13 · Copywriting</div>
+  <h2 class="sectiontitle">Banco de frases</h2>
+  <div class="rule"></div>
+  <div class="grid2">
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Claims y titulares</div>
+      <div class="phrase"><div class="es">Cocina de fuego.</div><div class="en">Cooked over fire.</div></div>
+      <div class="phrase"><div class="es">El fuego hace el resto.</div><div class="en">The fire does the rest.</div></div>
+      <div class="phrase"><div class="es">Producto, brasa y tiempo.</div><div class="en">Produce, embers and time.</div></div>
+      <div class="phrase"><div class="es">Del huerto y del mar, al fuego.</div><div class="en">From the garden and the sea, to the fire.</div></div>
+      <div class="phrase"><div class="es">San Carlos sabe a leña.</div><div class="en">San Carlos tastes of woodsmoke.</div></div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Para redes y reservas</div>
+      <div class="phrase"><div class="es">La leña no tiene prisa.</div><div class="en">Firewood is in no hurry.</div></div>
+      <div class="phrase"><div class="es">Reserva tu mesa junto al fuego.</div><div class="en">Book your table by the fire.</div></div>
+      <div class="phrase"><div class="es">Hoy, pescado del día a la brasa.</div><div class="en">Today: catch of the day over embers.</div></div>
+      <div class="phrase"><div class="es">Comer como en casa, en el norte de Ibiza.</div><div class="en">Eat like home, in northern Ibiza.</div></div>
+      <div class="phrase"><div class="es">Encendemos al amanecer.</div><div class="en">We light the fire at dawn.</div></div>
+    </div>
+  </div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">15</div>
+</section>
+
+<!-- 16 INSTAGRAM GRID -->
+<section class="page">
+  <div class="eyebrow">14 · Instagram</div>
+  <h2 class="sectiontitle">Rejilla y estética</h2>
+  <div class="rule"></div>
+  <p>El feed debe sentirse como la marca: cálido, con fuego y producto, intercalando fotografía con piezas de tinta sobre papel. Mantén un ritmo visual — no tres platos seguidos: alterna producto, lugar, proceso y una pieza tipográfica cada 3–4 posts.</p>
+  <div class="grid2" style="margin-top:16px;align-items:start">
+    <div>
+      <div class="igrid">
+        <div class="cell"><img src="../public/images/fire-logs.jpg" alt=""/></div>
+        <div class="cell"><img src="../public/images/whole-fish.jpg" alt=""/></div>
+        <div class="cell txt"><div><div class="script">cocina<br/>de fuego</div></div></div>
+        <div class="cell"><img src="../public/images/venue-terrace.jpg" alt=""/></div>
+        <div class="cell"><img src="../public/images/meat-grill.jpg" alt=""/></div>
+        <div class="cell"><img src="../public/images/wine.jpg" alt=""/></div>
+        <div class="cell txt"><div><div class="small">San Carlos</div><div class="script" style="font-size:18px">Ibiza</div></div></div>
+        <div class="cell"><img src="../public/images/venue-oven.jpg" alt=""/></div>
+        <div class="cell"><img src="../public/images/seafood-rice.jpg" alt=""/></div>
+      </div>
+      <div class="caption" style="text-align:center">Ejemplo de rejilla con ritmo: foto · foto · texto.</div>
+    </div>
+    <div>
+      <div class="eyebrow">Reglas del feed</div>
+      <ul class="feat">
+        <li>Tono cálido y luz natural en todas las fotos.</li>
+        <li>Una pieza tipográfica (papel/tinta) cada 3–4 posts.</li>
+        <li>Acento de color: solo brasa o terracota, puntual.</li>
+        <li>Isotipo como foto de perfil; destacados con iconos de marca.</li>
+        <li>Texto sobre foto: Clash Display en blanco, abajo a la izquierda.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">16</div>
+</section>
+
+<!-- 17 INSTAGRAM PILLARS -->
+<section class="page">
+  <div class="eyebrow">15 · Instagram</div>
+  <h2 class="sectiontitle">Pilares de contenido</h2>
+  <div class="rule"></div>
+  <p>Seis temas que se van rotando. Así el feed cuenta siempre la misma historia desde ángulos distintos y nunca te quedas sin ideas.</p>
+  <div class="grid2" style="margin-top:14px">
+    <div class="pillcard"><div class="n">01</div><h3>El fuego &amp; el proceso</h3><p>Brasa, horno de leña, humo, chispas. El alma de la marca.</p></div>
+    <div class="pillcard"><div class="n">02</div><h3>Producto del día</h3><p>Pescado, carne, verdura de mercado. «Hoy en la brasa…».</p></div>
+    <div class="pillcard"><div class="n">03</div><h3>El lugar</h3><p>Terraza, patio, atardecer, mesa puesta. El ambiente.</p></div>
+    <div class="pillcard"><div class="n">04</div><h3>Gente &amp; equipo</h3><p>Manos del chef, servicio, sobremesa. Lo humano.</p></div>
+    <div class="pillcard"><div class="n">05</div><h3>Ibiza &amp; San Carlos</h3><p>El entorno, el mercado local, el norte de la isla.</p></div>
+    <div class="pillcard"><div class="n">06</div><h3>Detrás de la barra</h3><p>Vino, vermut, sobremesa. La parte líquida del fuego.</p></div>
+  </div>
+  <div class="rule" style="margin-top:16px"></div>
+  <p class="caption">Frecuencia sugerida: 3–4 posts/semana + stories diarias. Reels para el proceso (fuego, brasa) — es lo que más alcance da.</p>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">17</div>
+</section>
+
+<!-- 18 INSTAGRAM IDEAS + TEMPLATES -->
+<section class="page">
+  <div class="eyebrow">16 · Instagram</div>
+  <h2 class="sectiontitle">Ideas y plantillas</h2>
+  <div class="rule"></div>
+  <div class="grid2">
+    <div>
+      <div class="eyebrow">Ideas de post / reel</div>
+      <ul class="feat">
+        <li>Encendiendo la leña al amanecer (reel a cámara lenta).</li>
+        <li>«Pescado del día» — del hielo a la brasa.</li>
+        <li>El horno abriéndose con vapor.</li>
+        <li>Plato emplatándose en 10 segundos.</li>
+        <li>Atardecer en la terraza, mesa servida.</li>
+        <li>El chef eligiendo producto en el mercado.</li>
+        <li>Descorchando un vino de la isla.</li>
+        <li>Antes / después: brasa apagada → llena de pescado.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">Plantillas de caption</div>
+      <div class="tmpl"><div class="lbl">Producto del día</div><p>«Hoy en la brasa: [plato]. 🔥 Producto de [origen]. Te esperamos en San Carlos.»</p></div>
+      <div class="tmpl"><div class="lbl">Reserva</div><p>«El fin de semana se llena. Reserva tu mesa junto al fuego — enlace en bio.»</p></div>
+      <div class="tmpl"><div class="lbl">Ambiente</div><p>«Atardecer, terraza y leña. Así suena el norte de Ibiza.»</p></div>
+    </div>
+  </div>
+  <div class="rule" style="margin-top:16px"></div>
+  <div class="eyebrow">Hashtags base</div>
+  <div style="margin-top:10px">
+    <span class="tag">#LaCantinaSanCarlos</span><span class="tag">#CocinaDeFuego</span><span class="tag">#SanCarlosIbiza</span><span class="tag">#BrasaYLeña</span><span class="tag">#IbizaFoodie</span><span class="tag">#ComerEnIbiza</span><span class="tag">#IbizaNorte</span><span class="tag">#SantaEulalia</span><span class="tag">#FuegoYProducto</span><span class="tag">#IbizaRestaurants</span><span class="tag">#MediterraneanFood</span><span class="tag">#OverTheFire</span>
+  </div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">18</div>
+</section>
+
+<!-- 19 APPLICATION / CONTACT -->
+<section class="page">
+  <div class="eyebrow">17 · Aplicación</div>
+  <h2 class="sectiontitle">La marca en uso</h2>
+  <div class="rule"></div>
+  <div class="photo" style="height:240px"><img src="../public/og.jpg" alt="web"/></div>
+  <p style="margin-top:10px" class="caption">Web oficial — sistema aplicado: papel cálido, tinta, Clash Display + Satoshi y la fotografía como único color.</p>
+  <div class="rule" style="margin-top:18px"></div>
+  <div class="grid2">
+    <div>
+      <div class="eyebrow">Contacto</div>
+      <ul class="clean" style="margin-top:8px">
+        <li>Web · lacantinasancarlosibiza.com</li>
+        <li>Email · info@lacantinasancarlosibiza.com</li>
+        <li>San Carlos · Ibiza, Islas Baleares</li>
+        <li>Idiomas · Español · English</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">Aplicaciones futuras</div>
+      <ul class="clean" style="margin-top:8px">
+        <li>Carta impresa y pizarra del día</li>
+        <li>Tarjetas, sellos y packaging para llevar</li>
+        <li>Uniforme y señalética del local</li>
+        <li>Plantillas de stories y posts</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:auto"></div>
+  <div class="script" style="font-size:38px;color:var(--ember)">cocina de fuego</div>
+  <div class="foot">Identidad · La Cantina</div>
+  <div class="pagenum">19</div>
+</section>
+
+</body>
+</html>

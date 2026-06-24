@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>La Cantina de San Carlos · Propuesta de Servicio</title>
+<style>
+  @font-face{font-family:'Clash Display';src:url('../public/fonts/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff2') format('woff2');font-weight:500;font-display:swap}
+  @font-face{font-family:'Clash Display';src:url('../public/fonts/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff2') format('woff2');font-weight:600;font-display:swap}
+  @font-face{font-family:'Clash Display';src:url('../public/fonts/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2') format('woff2');font-weight:700;font-display:swap}
+  @font-face{font-family:'Satoshi';src:url('../public/fonts/KFIAZD4RUMEZIYV6FQ3T3GP5PDBDB6JY.woff2') format('woff2');font-weight:400;font-display:swap}
+  @font-face{font-family:'Satoshi';src:url('../public/fonts/7AHDUZ4A7LFLVFUIFSARGIWCRQJHISQP.woff2') format('woff2');font-weight:500;font-display:swap}
+  @font-face{font-family:'Satoshi';src:url('../public/fonts/GHM6WVH6MILNYOOCXHXB5GTSGNTMGXZR.woff2') format('woff2');font-weight:700;font-display:swap}
+  @font-face{font-family:'Satoshi';src:url('../public/fonts/J64QX5IPOHK56I2KYUNBQ5M2XWZEYKYX.woff2') format('woff2');font-weight:900;font-display:swap}
+
+  :root{--paper:#ECE5D6;--paper-2:#F3EEE3;--white:#FBF9F4;--ink:#181613;--ink-soft:#4A453E;--muted:#8C857A;--line:rgba(24,22,19,0.14)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Satoshi',system-ui,sans-serif;color:var(--ink);background:#5a544a}
+  .page{width:210mm;min-height:297mm;background:var(--paper);margin:14px auto;padding:24mm 22mm;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.35);display:flex;flex-direction:column}
+  h1,h2,h3,.display{font-family:'Clash Display',serif;font-weight:600;letter-spacing:-.02em;line-height:1.04}
+  .eyebrow{font-weight:700;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+  p{color:var(--ink-soft);line-height:1.6;font-size:13px}
+  .rule{height:1px;background:var(--line);width:100%;margin:14px 0}
+  .pagenum{position:absolute;bottom:14mm;right:22mm;font-size:10px;letter-spacing:.2em;color:var(--muted)}
+  .foot{position:absolute;bottom:14mm;left:22mm;font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+
+  .cover{background:var(--ink);color:var(--paper);justify-content:space-between}
+  .cover .eyebrow{color:rgba(236,229,214,.55)}
+  .cover h1{font-size:56px;color:var(--paper)}
+  .cover p{color:rgba(236,229,214,.7)}
+  .cover .logo{width:110px}
+  .cover .pagenum,.cover .foot{color:rgba(236,229,214,.45)}
+  .cover .metarow{display:flex;gap:40px;margin-top:22px}
+  .cover .metarow .eyebrow{color:rgba(236,229,214,.45)}
+  .cover .metarow div > div:last-child{color:var(--paper);font-family:'Clash Display';font-size:15px;margin-top:4px}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  ul.feat{list-style:none;margin-top:6px}
+  ul.feat li{padding:9px 0 9px 22px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink-soft);position:relative}
+  ul.feat li:before{content:"";position:absolute;left:0;top:14px;width:8px;height:8px;background:var(--ink);border-radius:50%}
+  ul.feat li:last-child{border-bottom:none}
+  ul.feat li strong{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{text-align:left;padding:11px 6px;border-bottom:1px solid var(--line);font-size:12.5px}
+  th{font-weight:700;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  td.num{text-align:right;font-family:'Clash Display';font-weight:600;white-space:nowrap}
+  .total-row td{border-top:2px solid var(--ink);border-bottom:none;font-size:15px;padding-top:14px}
+  .total-row td.num{font-size:22px}
+
+  .card{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:20px 22px}
+  .price-hero{font-family:'Clash Display';font-weight:700;font-size:48px;line-height:1}
+  .pill{display:inline-block;background:var(--ink);color:var(--paper);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:5px 11px;border-radius:99px}
+  .sign{border:1px dashed var(--muted);border-radius:8px;height:70px;display:flex;align-items:flex-end;padding:10px 14px;font-size:11px;color:var(--muted)}
+
+  @media print{body{background:#fff}.page{margin:0;box-shadow:none;page-break-after:always}.page:last-child{page-break-after:auto}}
+  @page{size:A4;margin:0}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<section class="page cover">
+  <div><img class="logo" src="../public/images/logo-mark-white.png" alt="logo"/></div>
+  <div>
+    <div class="eyebrow">Propuesta de servicio</div>
+    <h1 style="margin-top:14px">Diseño y desarrollo<br/>de la web oficial</h1>
+    <p style="margin-top:18px;max-width:64%">Sitio web a medida, bilingüe, con sistema de reservas — para La Cantina de San Carlos, Ibiza.</p>
+    <div class="metarow">
+      <div><div class="eyebrow">Cliente</div><div>La Cantina de San Carlos</div></div>
+      <div><div class="eyebrow">Fecha</div><div>Junio 2026</div></div>
+      <div><div class="eyebrow">Validez</div><div>30 días</div></div>
+    </div>
+  </div>
+  <div class="foot">Preparado por Nicolás Cabral</div>
+  <div class="pagenum">01</div>
+</section>
+
+<!-- SCOPE -->
+<section class="page">
+  <div class="eyebrow">01 · Alcance</div>
+  <h2 style="font-size:32px;margin-top:10px">Qué incluye el proyecto</h2>
+  <div class="rule"></div>
+  <p>Diseño y desarrollo de la web oficial desde cero — no es una plantilla. Construida con tecnología moderna (Next.js), rápida, optimizada para móvil y lista para crecer.</p>
+  <div class="grid2" style="margin-top:14px">
+    <div>
+      <div class="eyebrow">Diseño y contenido</div>
+      <ul class="feat">
+        <li><strong>Diseño a medida</strong> con la identidad de la marca (logo facilitado por el cliente).</li>
+        <li><strong>Versión bilingüe</strong> español / inglés con selector de idioma.</li>
+        <li><strong>Galería de fotos</strong> curada del local y los platos.</li>
+        <li><strong>Carta</strong> y secciones de presentación del restaurante.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">Funcionalidad</div>
+      <ul class="feat">
+        <li><strong>Sistema de reservas por email</strong> con confirmación automática al cliente.</li>
+        <li><strong>Protección anti-spam</strong> en el formulario.</li>
+        <li><strong>Optimización móvil completa</strong> (iPhone/Android) y barra de Reservar + Llamar.</li>
+        <li><strong>SEO y preview en redes</strong> (imagen al compartir en WhatsApp/Instagram).</li>
+        <li><strong>Publicación online</strong> con dominio y correo profesional configurados.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="rule" style="margin-top:18px"></div>
+  <div class="eyebrow">Entrega</div>
+  <p style="margin-top:6px">Web publicada y funcionando en <strong>lacantinasancarlosibiza.com</strong>, con correo <strong>info@lacantinasancarlosibiza.com</strong> operativo y reservas activas.</p>
+  <div class="foot">Propuesta · La Cantina</div>
+  <div class="pagenum">02</div>
+</section>
+
+<!-- INVESTMENT -->
+<section class="page">
+  <div class="eyebrow">02 · Inversión</div>
+  <h2 style="font-size:32px;margin-top:10px">Presupuesto</h2>
+  <div class="rule"></div>
+
+  <div class="eyebrow">Desarrollo del sitio web — pago único</div>
+  <table>
+    <tr><th>Concepto</th><th style="text-align:right">Importe</th></tr>
+    <tr><td>Diseño y desarrollo web a medida (bilingüe, galería, carta)</td><td class="num">—</td></tr>
+    <tr><td>Sistema de reservas por email + correo profesional</td><td class="num">—</td></tr>
+    <tr><td>Optimización móvil, SEO y publicación</td><td class="num">—</td></tr>
+    <tr><td>Base imponible</td><td class="num">1.200,00 €</td></tr>
+    <tr><td>IVA (21%)</td><td class="num">252,00 €</td></tr>
+    <tr class="total-row"><td>Total proyecto</td><td class="num">1.452,00 €</td></tr>
+  </table>
+
+  <div class="card" style="margin-top:22px">
+    <span class="pill">Incluido sin coste · Primer año</span>
+    <p style="margin-top:12px;color:var(--ink)"><strong>Hosting, dominio y correo profesional gratis durante el primer año.</strong> Te despreocupas: alojamiento web, dominio .com y correo info@ incluidos en el proyecto durante los primeros 12 meses.</p>
+  </div>
+
+  <div class="rule" style="margin-top:22px"></div>
+  <div class="eyebrow">A partir del segundo año — cuota anual</div>
+  <table>
+    <tr><th>Concepto</th><th style="text-align:right">Importe</th></tr>
+    <tr><td>Hosting, dominio y correo profesional (renovación anual)</td><td class="num">250,00 €</td></tr>
+    <tr><td>IVA (21%)</td><td class="num">52,50 €</td></tr>
+    <tr class="total-row"><td>Total anual (desde año 2)</td><td class="num">302,50 €</td></tr>
+  </table>
+  <p style="margin-top:10px" class="caption" style="color:var(--muted)">Mantiene la web online, el dominio activo y el correo funcionando. Se factura una vez al año.</p>
+  <div class="foot">Propuesta · La Cantina</div>
+  <div class="pagenum">03</div>
+</section>
+
+<!-- TERMS + ACCEPTANCE -->
+<section class="page">
+  <div class="eyebrow">03 · Condiciones</div>
+  <h2 style="font-size:32px;margin-top:10px">Condiciones y aceptación</h2>
+  <div class="rule"></div>
+  <div class="grid2">
+    <div>
+      <div class="eyebrow">Forma de pago</div>
+      <ul class="feat">
+        <li><strong>50%</strong> al aceptar la propuesta para iniciar.</li>
+        <li><strong>50%</strong> restante a la entrega y publicación.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow">Condiciones</div>
+      <ul class="feat">
+        <li>Validez de esta propuesta: <strong>30 días</strong>.</li>
+        <li>Precios <strong>+ IVA</strong> según normativa vigente.</li>
+        <li>Cuota anual a partir del mes 13 desde la publicación.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div class="eyebrow">Total proyecto (IVA incl.)</div>
+      <div class="price-hero" style="margin-top:6px">1.452 €</div>
+    </div>
+    <div style="text-align:right">
+      <div class="eyebrow">Primer año</div>
+      <div class="display" style="font-size:24px;margin-top:6px">Hosting gratis</div>
+      <div class="caption" style="color:var(--muted);margin-top:4px">Después 302,50 €/año (IVA incl.)</div>
+    </div>
+  </div>
+
+  <div class="rule" style="margin-top:24px"></div>
+  <div class="eyebrow">Aceptación</div>
+  <div class="grid2" style="margin-top:12px">
+    <div><div class="sign">Firma del cliente</div></div>
+    <div><div class="sign">Fecha</div></div>
+  </div>
+
+  <div style="margin-top:auto"></div>
+  <div class="rule"></div>
+  <p class="caption" style="color:var(--muted)">Nicolás Cabral · Desarrollo web · info@lacantinasancarlosibiza.com · lacantinasancarlosibiza.com</p>
+  <div class="foot">Propuesta · La Cantina</div>
+  <div class="pagenum">04</div>
+</section>
+
+</body>
+</html>

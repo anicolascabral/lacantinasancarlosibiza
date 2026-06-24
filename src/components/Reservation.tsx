@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Reveal from "./Reveal";
 import { CasitaIcon } from "./Icons";
 import { EMAIL } from "@/lib/site";
@@ -8,12 +8,29 @@ import { useI18n } from "@/lib/i18n";
 
 type Status = "idle" | "sending" | "ok" | "error";
 
+// Cloudflare Turnstile (invisible CAPTCHA). Public site key, set in Vercel as a
+// NEXT_PUBLIC var. When empty, the widget isn't rendered and the server skips
+// verification — so the form keeps working until the keys are added.
+const TURNSTILE_SITEKEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
+
 export default function Reservation() {
   const { t, lang } = useI18n();
   const r = t.reservation;
   const f = r.form;
   const [status, setStatus] = useState<Status>("idle");
   const es = lang === "es";
+  const mountedAt = useRef(Date.now());
+
+  // Load the Turnstile script once (only if a site key is configured).
+  useEffect(() => {
+    if (!TURNSTILE_SITEKEY || document.querySelector("script[data-cf-turnstile]")) return;
+    const s = document.createElement("script");
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    s.async = true;
+    s.defer = true;
+    s.setAttribute("data-cf-turnstile", "1");
+    document.head.appendChild(s);
+  }, []);
 
   const ph = es
     ? { name: "Tu nombre", email: "tu@correo.com", phone: "+34 600 000 000", message: "Alergias, celebración especial…" }
@@ -43,6 +60,7 @@ export default function Reservation() {
     const form = e.currentTarget;
     const data = new FormData(form);
     if (data.get("company")) return; // honeypot — bot filled the hidden field
+    if (Date.now() - mountedAt.current < 2500) return; // filled impossibly fast → bot
     const get = (k: string) => (data.get(k) as string)?.trim() || "—";
     const raw = (k: string) => (data.get(k) as string)?.trim() || "";
 
@@ -53,6 +71,7 @@ export default function Reservation() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           company: (data.get("company") as string) || "",
+          turnstileToken: (data.get("cf-turnstile-response") as string) || "",
           name: raw("name"),
           email: raw("email"),
           phone: raw("phone"),
@@ -143,6 +162,12 @@ export default function Reservation() {
               <label className="field-label">{f.message}</label>
               <textarea name="message" rows={3} placeholder={ph.message} className="field resize-none" />
             </div>
+
+            {TURNSTILE_SITEKEY && (
+              <div className="sm:col-span-2 flex justify-center">
+                <div className="cf-turnstile" data-sitekey={TURNSTILE_SITEKEY} data-theme="light" data-size="flexible" />
+              </div>
+            )}
 
             <button
               type="submit"
