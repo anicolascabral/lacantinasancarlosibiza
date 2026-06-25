@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Reveal from "./Reveal";
 import { HornoIcon } from "./Icons";
 import { useI18n } from "@/lib/i18n";
@@ -34,8 +35,7 @@ export default function Menu() {
           {/* Authentic oven image */}
           <div className="md:col-span-2 md:sticky md:top-28">
             <figure className="img-zoom img-duo w-full rounded-sm relative aspect-[16/10] md:aspect-[4/5]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={m.image} alt={m.title} className="w-full h-full object-cover" />
+              <Image src={m.image} alt={m.title} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
               <figcaption className="absolute bottom-4 left-4 font-script" style={{ color: "var(--paper)", fontSize: "1.3rem", textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>
                 El horno
               </figcaption>

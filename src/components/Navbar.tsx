@@ -1,10 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useI18n, Lang } from "@/lib/i18n";
 
 export default function Navbar() {
-  const { t, lang, setLang } = useI18n();
+  const { t, lang } = useI18n();
+  const pathname = usePathname();
+  // Keep the current sub-path when switching language for crawlable hreflang links.
+  const localizedPath = (l: Lang) => `/${l}${(pathname || `/${lang}`).replace(/^\/(es|en)(?=\/|$)/, "")}`;
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -28,14 +33,15 @@ export default function Navbar() {
       {(["es", "en"] as Lang[]).map((l, i) => (
         <span key={l} className="flex items-center gap-1.5">
           {i === 1 && <span style={{ opacity: 0.4 }}>/</span>}
-          <button
-            onClick={() => setLang(l)}
+          <Link
+            href={localizedPath(l)}
+            hrefLang={l}
             className="uppercase transition-opacity"
             style={{ opacity: lang === l ? 1 : 0.45 }}
             aria-label={l === "es" ? "Español" : "English"}
           >
             {l}
-          </button>
+          </Link>
         </span>
       ))}
     </div>

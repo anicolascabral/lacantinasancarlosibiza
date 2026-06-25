@@ -1,17 +1,31 @@
 "use client";
 
+import Image from "next/image";
 import Marquee from "./Marquee";
 import Embers from "./Embers";
 import { useI18n } from "@/lib/i18n";
 
 export default function Hero() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const h1 =
+    lang === "en"
+      ? "La Cantina de San Carlos — wood-fired & clay-oven restaurant in Sant Carles, Ibiza"
+      : "La Cantina de San Carlos — restaurante de cocina de fuego y horno de barro en Sant Carles, Ibiza";
   return (
     <section className="relative w-full overflow-hidden" style={{ height: "100lvh", minHeight: "660px", backgroundColor: "var(--ink)" }}>
+      {/* Keyword-rich H1 for SEO; visually hidden so the logo stays the visual title. */}
+      <h1 className="sr-only">{h1}</h1>
       {/* Background photo — burning wood, slow zoom */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/fire-logs.jpg" alt="" className="kenburns w-full h-full object-cover" style={{ opacity: 0.5 }} />
+        <Image
+          src="/images/fire-logs.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="kenburns object-cover"
+          style={{ opacity: 0.5 }}
+        />
         <div
           className="absolute inset-0"
           style={{

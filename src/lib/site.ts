@@ -1,5 +1,15 @@
 // Central place for La Cantina contact details.
 
+// Canonical site URL. Falls back to the Vercel production URL until the custom
+// domain is connected. Used for metadata, JSON-LD, sitemap and robots.
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "https://www.lacantinasancarlosibiza.com");
+
+export const LOCALES = ["es", "en"] as const;
+
 export const INSTAGRAM = "https://instagram.com/lacantinadesancarlos";
 export const ADDRESS = "Plaça de la Iglesia, bajos 4, 07850 Sant Carles, Ibiza";
 

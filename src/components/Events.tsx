@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Reveal from "./Reveal";
 import { MalletIcon } from "./Icons";
 import { useI18n } from "@/lib/i18n";
@@ -32,8 +33,7 @@ export default function Events() {
             <Reveal key={ev.title} delay={i * 90}>
               <div className="group h-full flex flex-col transition-transform duration-500 hover:-translate-y-1.5" style={{ backgroundColor: "var(--paper)" }}>
                 <figure className="img-zoom img-duo w-full relative" style={{ aspectRatio: "4/3" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={ev.img} alt={ev.title} className="w-full h-full object-cover" />
+                  <Image src={ev.img} alt={ev.title} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
                   <span className="absolute top-4 left-4 font-display" style={{ color: "var(--paper)", fontSize: "1.6rem", textShadow: "0 1px 10px rgba(0,0,0,0.7)" }}>{ev.n}</span>
                 </figure>
                 <div className="p-7 flex flex-col flex-1">

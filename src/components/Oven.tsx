@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Reveal from "./Reveal";
 import { HornoIcon, MalletIcon, PalmIcon, CasitaIcon } from "./Icons";
 import { useI18n } from "@/lib/i18n";
@@ -13,8 +14,7 @@ export default function Oven() {
     <section id="horno" className="relative py-28 md:py-40 px-6 overflow-hidden" style={{ backgroundColor: "var(--ink)" }}>
       {/* faint fire backdrop */}
       <div className="absolute inset-0 z-0" style={{ opacity: 0.16 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/fire-logs.jpg" alt="" className="w-full h-full object-cover" />
+        <Image src="/images/fire-logs.jpg" alt="" fill sizes="100vw" className="object-cover" />
         <div className="absolute inset-0" style={{ backgroundColor: "rgba(24,22,19,0.55)" }} />
       </div>
 
@@ -48,8 +48,7 @@ export default function Oven() {
         <div className="mt-20 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
           <Reveal delay={120}>
             <figure className="img-zoom img-duo w-full rounded-sm relative" style={{ aspectRatio: "4/3" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/venue-oven.jpg" alt={o.caption} className="w-full h-full object-cover" />
+              <Image src="/images/venue-oven.jpg" alt={o.caption} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
               <figcaption className="absolute bottom-4 right-4 text-right eyebrow" style={{ color: "var(--paper)", fontSize: "0.6rem", textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}>
                 {o.caption}
               </figcaption>

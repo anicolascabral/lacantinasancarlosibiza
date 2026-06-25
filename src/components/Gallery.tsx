@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Reveal from "./Reveal";
 import { PalmIcon } from "./Icons";
 import Marquee from "./Marquee";
@@ -35,8 +36,7 @@ export default function Gallery() {
           {featured && (
             <Reveal className="col-span-2">
               <figure className="img-zoom img-duo relative w-full rounded-sm group aspect-[16/8] md:aspect-[16/6]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={featured.src} alt={featured.hint} className="w-full h-full object-cover" />
+                <Image src={featured.src} alt={featured.hint} fill sizes="100vw" className="object-cover" />
                 <figcaption className="absolute inset-0 flex items-end p-4 md:p-6" style={{ background: "linear-gradient(to top, rgba(24,22,19,0.6), transparent 55%)" }}>
                   <span className="eyebrow translate-y-1 group-hover:translate-y-0 transition-transform duration-500" style={{ color: "var(--paper)", fontSize: "0.62rem" }}>{featured.hint}</span>
                 </figcaption>
@@ -48,8 +48,7 @@ export default function Gallery() {
           {rest.map((tile, i) => (
             <Reveal key={i} delay={(i % 2) * 80}>
               <figure className="img-zoom img-duo relative w-full rounded-sm group aspect-square md:aspect-[4/3]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={tile.src} alt={tile.hint} className="w-full h-full object-cover" />
+                <Image src={tile.src} alt={tile.hint} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
                 <figcaption className="absolute inset-0 flex items-end p-4" style={{ background: "linear-gradient(to top, rgba(24,22,19,0.6), transparent 50%)" }}>
                   <span className="eyebrow translate-y-1 group-hover:translate-y-0 transition-transform duration-500" style={{ color: "var(--paper)", fontSize: "0.6rem" }}>{tile.hint}</span>
                 </figcaption>

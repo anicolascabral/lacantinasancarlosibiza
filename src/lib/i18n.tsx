@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 export type Lang = "es" | "en";
 
@@ -245,18 +246,21 @@ const translations: Record<Lang, Dict> = {
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: Dict };
 const LangContext = createContext<Ctx | null>(null);
 
-export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("es");
-
-  useEffect(() => {
-    const stored = (typeof window !== "undefined" && localStorage.getItem("lang")) as Lang | null;
-    if (stored === "es" || stored === "en") setLangState(stored);
-  }, []);
+export function LangProvider({ initialLang, children }: { initialLang: Lang; children: ReactNode }) {
+  // Locale is driven by the URL (/es, /en) so each language has its own
+  // indexable, server-rendered page. `initialLang` comes from the [lang] route
+  // param, so the SSR HTML already matches the requested language.
+  const [lang, setLangState] = useState<Lang>(initialLang);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const setLang = (l: Lang) => {
+    if (l === lang) return;
     setLangState(l);
     if (typeof window !== "undefined") localStorage.setItem("lang", l);
-    if (typeof document !== "undefined") document.documentElement.lang = l;
+    // Swap the leading locale segment and navigate, keeping the rest of the path.
+    const rest = (pathname || `/${lang}`).replace(/^\/(es|en)(?=\/|$)/, "");
+    router.push(`/${l}${rest}`);
   };
 
   return <LangContext.Provider value={{ lang, setLang, t: translations[lang] }}>{children}</LangContext.Provider>;
