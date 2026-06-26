@@ -4,8 +4,14 @@
      2) Si hay opción "código fuente / <>", pega TODO el HTML de abajo.
         Si no, abre este archivo en el navegador (doble clic), selecciona todo
         (Cmd/Ctrl+A), copia (Cmd/Ctrl+C) y pega en el cuerpo de la plantilla.
-     3) Guarda. Al confirmar una reserva: responde al correo del cliente y
-        pulsa Plantillas → Confirmación de reserva. Ajusta día/hora/personas.
+     3) Guarda.
+
+     AL CONFIRMAR UNA RESERVA:
+     - Responde al correo de la reserva (va al cliente: Reply-To = su correo).
+     - Inserta esta plantilla (Plantillas → Confirmación de reserva).
+     - Sustituye los huecos entre corchetes con los datos del correo de la
+       reserva (que tienes justo encima): [NOMBRE], [DÍA], [HORA], [PERSONAS].
+     Nota: Zoho NO rellena estos datos solo; se completan a mano (10 segundos).
 -->
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0;padding:0;background:#ECE5D6">
   <tr><td align="center" style="padding:28px 14px">
@@ -19,6 +25,7 @@
       <tr><td style="background:#FBF9F4;padding:34px 32px;border-left:1px solid #e2dac9;border-right:1px solid #e2dac9">
         <h1 style="margin:0 0 14px;color:#181613;font:700 22px/1.3 Arial,Helvetica,sans-serif">¡Tu reserva está confirmada!</h1>
         <p style="margin:0 0 18px;color:#4A453E;font:15px/1.7 Arial,sans-serif">
+          Hola <strong style="color:#181613">[NOMBRE]</strong>,<br>
           Gracias por tu interés en <strong style="color:#181613">La Cantina de San Carlos Ibiza</strong>.
           Tu reserva está <strong style="color:#181613">confirmada</strong>.
         </p>
@@ -26,15 +33,15 @@
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3EEE3;border:1px solid #e2dac9;border-radius:6px;border-collapse:separate">
           <tr>
             <td style="padding:11px 16px;color:#8C857A;font:700 11px/1.4 Arial,sans-serif;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap">Día</td>
-            <td style="padding:11px 16px 11px 0;color:#181613;font:600 15px/1.55 Arial,sans-serif">—</td>
+            <td style="padding:11px 16px 11px 0;color:#181613;font:600 15px/1.55 Arial,sans-serif">[DÍA]</td>
           </tr>
           <tr>
             <td style="padding:11px 16px;border-top:1px solid #e2dac9;color:#8C857A;font:700 11px/1.4 Arial,sans-serif;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap">Hora</td>
-            <td style="padding:11px 16px 11px 0;border-top:1px solid #e2dac9;color:#181613;font:600 15px/1.55 Arial,sans-serif">—</td>
+            <td style="padding:11px 16px 11px 0;border-top:1px solid #e2dac9;color:#181613;font:600 15px/1.55 Arial,sans-serif">[HORA]</td>
           </tr>
           <tr>
             <td style="padding:11px 16px;border-top:1px solid #e2dac9;color:#8C857A;font:700 11px/1.4 Arial,sans-serif;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap">Personas</td>
-            <td style="padding:11px 16px 11px 0;border-top:1px solid #e2dac9;color:#181613;font:600 15px/1.55 Arial,sans-serif">—</td>
+            <td style="padding:11px 16px 11px 0;border-top:1px solid #e2dac9;color:#181613;font:600 15px/1.55 Arial,sans-serif">[PERSONAS]</td>
           </tr>
         </table>
         <p style="margin:20px 0 0;color:#4A453E;font:15px/1.7 Arial,sans-serif">
