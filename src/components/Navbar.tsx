@@ -60,23 +60,6 @@ export default function Navbar() {
           paddingRight: "env(safe-area-inset-right)",
         }}
       >
-        {/* Thin announcement bar — collapses on scroll / when menu open */}
-        <div
-          className="overflow-hidden transition-all duration-500"
-          style={{
-            maxHeight: scrolled || menuOpen ? 0 : 40,
-            opacity: scrolled || menuOpen ? 0 : 1,
-            borderBottom: scrolled || menuOpen ? "none" : "1px solid rgba(243,238,227,0.18)",
-          }}
-        >
-          <div className="flex items-center justify-center gap-3 py-2.5 px-6">
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--paper)" }} />
-            <span className="eyebrow" style={{ color: "var(--paper)", fontSize: "0.6rem", letterSpacing: "0.28em" }}>
-              {t.nav.announce}
-            </span>
-          </div>
-        </div>
-
         <div className="grid grid-cols-3 items-center px-6 md:px-10 py-4">
           {/* Left — language toggle + reserve */}
           <div className="flex items-center gap-5">

@@ -18,8 +18,16 @@ export default function Reservation() {
   const r = t.reservation;
   const f = r.form;
   const [status, setStatus] = useState<Status>("idle");
+  const [errMsg, setErrMsg] = useState("");
   const es = lang === "es";
   const mountedAt = useRef(Date.now());
+
+  // Dinner-only service, every day except Wednesday. Offer 15-min slots from
+  // 19:30 to the last seating at 23:00 (kitchen closes 23:30).
+  const TIME_SLOTS: string[] = [];
+  for (let m = 19 * 60 + 30; m <= 23 * 60; m += 15) {
+    TIME_SLOTS.push(`${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
+  }
 
   // Load the Turnstile script once (only if a site key is configured).
   useEffect(() => {
@@ -44,6 +52,12 @@ export default function Reservation() {
     error: es
       ? `No se pudo enviar. Escríbenos a ${EMAIL} o inténtalo de nuevo.`
       : `Couldn't send. Please email ${EMAIL} or try again.`,
+    closedWed: es
+      ? "Los miércoles cerramos. Elige otro día, por favor."
+      : "We're closed on Wednesdays. Please pick another day.",
+    pastDay: es
+      ? "Esa fecha ya pasó. Elige un día a partir de hoy."
+      : "That date has passed. Please pick today or later.",
   };
 
   function mailtoFallback(get: (k: string) => string) {
@@ -55,6 +69,32 @@ export default function Reservation() {
     window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
+  // Returns an error message for an invalid booking date (past / Wednesday), or "".
+  function dateError(dateStr: string): string {
+    if (!dateStr) return "";
+    const [yy, mm, dd] = dateStr.split("-").map(Number);
+    const picked = new Date(yy, mm - 1, dd);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (picked < today) return msg.pastDay;
+    if (picked.getDay() === 3) return msg.closedWed; // Wednesday — closed
+    return "";
+  }
+
+  // Reject an invalid day the moment it's picked (the native picker can't hide
+  // Wednesdays), clearing the field so it can't be submitted.
+  function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const err = dateError(e.target.value);
+    if (err) {
+      e.target.value = "";
+      setErrMsg(err);
+      setStatus("error");
+    } else {
+      setErrMsg("");
+      setStatus((s) => (s === "error" ? "idle" : s));
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
@@ -64,6 +104,15 @@ export default function Reservation() {
     const get = (k: string) => (data.get(k) as string)?.trim() || "—";
     const raw = (k: string) => (data.get(k) as string)?.trim() || "";
 
+    // Date guard (no past days, closed on Wednesdays) — safety net for submit.
+    const dErr = dateError(raw("date"));
+    if (dErr) {
+      setErrMsg(dErr);
+      setStatus("error");
+      return;
+    }
+
+    setErrMsg("");
     setStatus("sending");
     try {
       const res = await fetch("/api/reserva", {
@@ -143,11 +192,16 @@ export default function Reservation() {
             </div>
             <div className="field-group sm:col-span-2">
               <label className="field-label">{f.date}</label>
-              <input name="date" type="date" className="field" />
+              <input name="date" type="date" className="field" onChange={handleDateChange} />
             </div>
             <div className="field-group">
               <label className="field-label">{f.time}</label>
-              <input name="time" type="time" className="field" />
+              <select name="time" defaultValue="" className="field">
+                <option value="" disabled>{es ? "Elige hora" : "Pick a time"}</option>
+                {TIME_SLOTS.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
             <div className="field-group">
               <label className="field-label">{f.guests}</label>
@@ -187,7 +241,7 @@ export default function Reservation() {
               {status === "ok" ? (
                 <span className="font-body text-sm">{msg.ok}</span>
               ) : status === "error" ? (
-                <span className="font-body text-sm">{msg.error}</span>
+                <span className="font-body text-sm">{errMsg || msg.error}</span>
               ) : (
                 <span className="eyebrow" style={{ fontSize: "0.58rem" }}>{r.quick}</span>
               )}

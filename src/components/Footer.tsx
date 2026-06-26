@@ -1,6 +1,6 @@
 "use client";
 
-import { INSTAGRAM, PHONE, PHONE_TEL, EMAIL, EMAIL_MAILTO } from "@/lib/site";
+import { INSTAGRAM, PHONE, PHONE_TEL, EMAIL, EMAIL_MAILTO, MAPS_URL } from "@/lib/site";
 import Marquee from "./Marquee";
 import { InstagramIcon } from "./Icons";
 import { useI18n } from "@/lib/i18n";
@@ -15,9 +15,13 @@ export default function Footer() {
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12">
           <div>
             <p className="font-display uppercase text-sm tracking-widest mb-4" style={{ color: "var(--paper)", letterSpacing: "0.15em" }}>{f.whereLabel}</p>
-            <div className="space-y-1.5 font-body text-sm" style={{ color: "rgba(243,238,227,0.6)" }}>
+            <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="group block space-y-1.5 font-body text-sm transition-colors hover:text-[var(--paper)]" style={{ color: "rgba(243,238,227,0.6)" }}>
               {f.where.map((line) => <p key={line}>{line}</p>)}
-            </div>
+              <span className="inline-flex items-center gap-1.5 pt-1.5 text-xs uppercase tracking-widest font-bold transition-opacity group-hover:opacity-100" style={{ color: "var(--paper)", opacity: 0.75, letterSpacing: "0.18em" }}>
+                {f.directions}
+                <span aria-hidden className="transition-transform group-hover:translate-x-0.5">↗</span>
+              </span>
+            </a>
           </div>
 
           <div>

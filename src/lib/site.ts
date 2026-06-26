@@ -13,6 +13,9 @@ export const LOCALES = ["es", "en"] as const;
 export const INSTAGRAM = "https://instagram.com/lacantinadesancarlos";
 export const ADDRESS = "Plaça de la Iglesia, bajos 4, 07850 Sant Carles, Ibiza";
 
+// Google Maps link to the restaurant — clickable address & "how to get there".
+export const MAPS_URL = "https://share.google/J0DDIKNT5taIaROIf";
+
 // Phone (display + tel: link)
 export const PHONE = "+34 971 24 36 27";
 export const PHONE_TEL = "tel:+34971243627";

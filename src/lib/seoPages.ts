@@ -163,13 +163,13 @@ export const seoPages: Record<SeoSlug, Record<Lang, SeoPageContent>> = {
       h1: "Reservar mesa en La Cantina de San Carlos, Ibiza",
       title: "Reservar mesa — La Cantina de San Carlos, Ibiza",
       description:
-        "Reserva tu mesa en La Cantina de San Carlos (Sant Carles), Ibiza. Cocina de fuego y horno de barro. Abierto cada día excepto miércoles, comidas y cenas.",
+        "Reserva tu mesa en La Cantina de San Carlos (Sant Carles), Ibiza. Cocina de fuego y horno de barro. Abierto para cenas cada día excepto miércoles.",
       intro:
-        "¿Quieres comer o cenar con nosotros? Reserva tu mesa en La Cantina de San Carlos, en el centro de Sant Carles, Ibiza. Te recomendamos reservar con antelación, sobre todo en temporada.",
+        "¿Quieres cenar con nosotros? Reserva tu mesa en La Cantina de San Carlos, en el centro de Sant Carles, Ibiza. Te recomendamos reservar con antelación, sobre todo en temporada.",
       sections: [
         {
           heading: "Horario",
-          body: ["Cada día excepto miércoles.", "Comidas 13:00 — 16:00 · Cenas 19:30 — 23:30."],
+          body: ["Cada día excepto miércoles.", "Cenas 19:30 — 23:30."],
         },
         {
           heading: "Cómo reservar",
@@ -186,13 +186,13 @@ export const seoPages: Record<SeoSlug, Record<Lang, SeoPageContent>> = {
       h1: "Book a table at La Cantina de San Carlos, Ibiza",
       title: "Book a Table — La Cantina de San Carlos, Ibiza",
       description:
-        "Book your table at La Cantina de San Carlos (Sant Carles), Ibiza. Fire cooking and a wood-fired clay oven. Open every day except Wednesday, lunch and dinner.",
+        "Book your table at La Cantina de San Carlos (Sant Carles), Ibiza. Fire cooking and a wood-fired clay oven. Open for dinner every day except Wednesday.",
       intro:
-        "Want to join us for lunch or dinner? Book your table at La Cantina de San Carlos, in the centre of Sant Carles, Ibiza. We recommend booking ahead, especially in season.",
+        "Want to join us for dinner? Book your table at La Cantina de San Carlos, in the centre of Sant Carles, Ibiza. We recommend booking ahead, especially in season.",
       sections: [
         {
           heading: "Opening hours",
-          body: ["Every day except Wednesday.", "Lunch 13:00 — 16:00 · Dinner 19:30 — 23:30."],
+          body: ["Every day except Wednesday.", "Dinner 19:30 — 23:30."],
         },
         {
           heading: "How to book",

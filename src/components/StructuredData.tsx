@@ -1,4 +1,4 @@
-import { INSTAGRAM, PHONE, EMAIL } from "@/lib/site";
+import { INSTAGRAM, PHONE, EMAIL, MAPS_URL } from "@/lib/site";
 import type { Lang } from "@/lib/i18n";
 
 // Server-rendered JSON-LD. This is the single biggest local-SEO lever for a
@@ -39,15 +39,9 @@ export default function StructuredData({ lang, siteUrl }: { lang: Lang; siteUrl:
       latitude: 38.9833,
       longitude: 1.5167,
     },
-    hasMap: "https://www.google.com/maps/search/?api=1&query=La+Cantina+de+San+Carlos+Sant+Carles+Ibiza",
-    // Every day except Wednesday · 13:00–16:00 (lunch) and 19:30–23:30 (dinner).
+    hasMap: MAPS_URL,
+    // Every day except Wednesday · dinner only, 19:30–23:30.
     openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        opens: "13:00",
-        closes: "16:00",
-      },
       {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: ["Monday", "Tuesday", "Thursday", "Friday", "Saturday", "Sunday"],

@@ -14,7 +14,7 @@
 // to opening the visitor's mail app, so a booking is never lost.
 
 import nodemailer from "nodemailer";
-import { ADDRESS, PHONE, INSTAGRAM, EMAIL } from "@/lib/site";
+import { ADDRESS, PHONE, INSTAGRAM, EMAIL, MAPS_URL } from "@/lib/site";
 
 export const runtime = "nodejs";
 
@@ -79,9 +79,102 @@ function detailsTable(rows: [string, string][]) {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${CARD};border:1px solid ${LINE};border-radius:6px;border-collapse:separate">${body}</table>`;
 }
 
+const pad = (n: number) => String(n).padStart(2, "0");
+
+// Build an iCalendar INVITE (1h30) for a booking, anchored to Europe/Madrid so the
+// restaurant's calendar shows the right local time regardless of where it's read.
+// Sent as METHOD:REQUEST with the restaurant mailbox (`attendee`) invited, so the
+// mail client shows "Accept" and the event lands in the calendar (not just a file).
+// Returns null when the booking has no usable date/time (nothing to schedule).
+function bookingIcs(opts: {
+  date?: string;
+  time?: string;
+  name: string;
+  guests: string;
+  phone: string;
+  email: string;
+  message: string;
+  attendee: string; // restaurant mailbox (info@) that receives the invite
+  es: boolean;
+}): string | null {
+  const date = (opts.date || "").trim(); // YYYY-MM-DD (from <input type="date">)
+  const time = (opts.time || "").trim(); // HH:MM    (from <input type="time">)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{1,2}:\d{2}/.test(time)) return null;
+
+  const [y, mo, da] = date.split("-").map(Number);
+  const [h, mi] = time.split(":").map(Number);
+  // Treat the wall-clock components as UTC purely for +90min arithmetic, so the
+  // rollover past midnight is correct on Vercel (which runs in UTC).
+  const startMs = Date.UTC(y, mo - 1, da, h, mi);
+  const end = new Date(startMs + 90 * 60000);
+  const local = (d: Date) =>
+    `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00`;
+  const dtStart = `${date.replace(/-/g, "")}T${pad(h)}${pad(mi)}00`;
+  const dtEnd = local(end);
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const uid = `${dtStart}-${(opts.email || opts.phone || "anon").replace(/[^a-z0-9]/gi, "")}-${Math.random().toString(36).slice(2, 8)}@lacantinasancarlosibiza.com`;
+
+  const fold = (s: string) => s.replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n");
+  const has = (s: string) => s && s.trim() && s.trim() !== "—";
+
+  // Title carries the key details at a glance: name · guests · phone.
+  const titleParts = [opts.name];
+  if (has(opts.guests)) titleParts.push(`${opts.guests}${opts.es ? " pers." : " guests"}`);
+  if (has(opts.phone)) titleParts.push(opts.phone);
+  const summary = `${opts.es ? "Reserva" : "Booking"} · ${titleParts.join(" · ")}`;
+
+  const descLines = opts.es
+    ? [`Nombre: ${opts.name}`, `Personas: ${opts.guests}`, `Teléfono: ${opts.phone}`, `Correo: ${opts.email}`, `Mensaje: ${opts.message}`]
+    : [`Name: ${opts.name}`, `Guests: ${opts.guests}`, `Phone: ${opts.phone}`, `Email: ${opts.email}`, `Message: ${opts.message}`];
+
+  // The customer "organizes" the request; the restaurant mailbox is the invitee.
+  const organizerMail = has(opts.email) && opts.email.includes("@") ? opts.email.trim() : opts.attendee;
+  const organizerCN = (organizerMail === opts.attendee ? BRAND : opts.name).replace(/"/g, "");
+
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//La Cantina de San Carlos//Reservas//ES",
+    "CALSCALE:GREGORIAN",
+    "METHOD:REQUEST",
+    "BEGIN:VTIMEZONE",
+    "TZID:Europe/Madrid",
+    "BEGIN:DAYLIGHT",
+    "TZOFFSETFROM:+0100",
+    "TZOFFSETTO:+0200",
+    "TZNAME:CEST",
+    "DTSTART:19700329T020000",
+    "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU",
+    "END:DAYLIGHT",
+    "BEGIN:STANDARD",
+    "TZOFFSETFROM:+0200",
+    "TZOFFSETTO:+0100",
+    "TZNAME:CET",
+    "DTSTART:19701025T030000",
+    "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
+    "END:STANDARD",
+    "END:VTIMEZONE",
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART;TZID=Europe/Madrid:${dtStart}`,
+    `DTEND;TZID=Europe/Madrid:${dtEnd}`,
+    `ORGANIZER;CN="${organizerCN}":mailto:${organizerMail}`,
+    `ATTENDEE;CN="${BRAND}";ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:${opts.attendee}`,
+    `SUMMARY:${fold(summary)}`,
+    `DESCRIPTION:${fold(descLines.join("\n"))}`,
+    `LOCATION:${fold(ADDRESS)}`,
+    "SEQUENCE:0",
+    "STATUS:CONFIRMED",
+    "TRANSP:OPAQUE",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+}
+
 function shell(opts: { heading: string; lead: string; rowsHtml: string; aside: string; es: boolean }) {
   const tagline = opts.es ? "Cocina mediterránea al fuego · Ibiza" : "Mediterranean fire cooking · Ibiza";
-  const hours = opts.es ? "Cada día excepto miércoles · 13:00 – 16:00 · 19:30 – 23:30" : "Every day except Wednesday · 13:00 – 16:00 · 19:30 – 23:30";
+  const hours = opts.es ? "Cada día excepto miércoles · 19:30 – 23:30" : "Every day except Wednesday · 19:30 – 23:30";
   const ig = INSTAGRAM.replace("https://instagram.com/", "@");
   return `<!doctype html><html><body style="margin:0;padding:0;background:${PAPER}">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAPER}">
@@ -103,7 +196,7 @@ function shell(opts: { heading: string; lead: string; rowsHtml: string; aside: s
         <tr><td style="background:${CARD};padding:22px 32px;border:1px solid ${LINE};border-top:1px solid ${LINE};border-radius:0 0 6px 6px">
           <p style="margin:0 0 6px;color:${INK};font:700 12px/1.5 Arial,sans-serif;letter-spacing:.04em">${esc(BRAND)}</p>
           <p style="margin:0;color:${SOFT};font:12px/1.85 Arial,sans-serif">
-            ${esc(ADDRESS)}<br>
+            <a href="${MAPS_URL}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(ADDRESS)}</a><br>
             ${esc(hours)}<br>
             <a href="tel:${PHONE.replace(/\s/g, "")}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(PHONE)}</a>
             &nbsp;·&nbsp;
@@ -155,6 +248,18 @@ export async function POST(request: Request) {
     const notifLead = es
       ? `Acabas de recibir una solicitud de reserva desde la web. Responde a este correo para contestar directamente a <strong style="color:${INK}">${esc(name)}</strong>.`
       : `A new booking request just came in from the website. Reply to this email to answer <strong style="color:${INK}">${esc(name)}</strong> directly.`;
+    // Calendar event (1h30) for the restaurant — only when we have a date & time.
+    const ics = bookingIcs({
+      date: d.date,
+      time: d.time,
+      name,
+      guests: v(d.guests),
+      phone: v(d.phone),
+      email: v(d.email),
+      message: v(d.message),
+      attendee: user,
+      es,
+    });
     await transporter.sendMail({
       from: `"${BRAND} · Reservas" <${user}>`,
       to: user,
@@ -169,6 +274,9 @@ export async function POST(request: Request) {
         rowsHtml,
         aside: es ? "Datos recibidos a través de lacantinasancarlosibiza.com" : "Received via lacantinasancarlosibiza.com",
       }),
+      ...(ics
+        ? { icalEvent: { method: "REQUEST", filename: "reserva.ics", content: ics } }
+        : {}),
     });
 
     // 2) Confirmation to the customer (best effort — only if they gave an email).

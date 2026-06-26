@@ -8,7 +8,7 @@ export type Lang = "es" | "en";
 type Family = { n: string; name: string; desc: string };
 
 type Dict = {
-  nav: { announce: string; reserve: string; menu: string; bookTable: string; links: { label: string; href: string }[] };
+  nav: { reserve: string; menu: string; bookTable: string; links: { label: string; href: string }[] };
   hero: { eyebrow: string; viewMenu: string; bookTable: string; marquee: string[] };
   about: {
     eyebrow: string; script: string; title: string; quote: string; p1: string; caption: string;
@@ -30,7 +30,7 @@ type Dict = {
     };
   };
   footer: {
-    whereLabel: string; where: string[]; hoursLabel: string; hours: string[]; followLabel: string;
+    whereLabel: string; where: string[]; directions: string; hoursLabel: string; hours: string[]; followLabel: string;
     waText: string; menuLink: string; marquee: string[]; fireIn: string; tagline: string; rights: string;
   };
 };
@@ -38,7 +38,6 @@ type Dict = {
 const translations: Record<Lang, Dict> = {
   es: {
     nav: {
-      announce: "Próxima apertura · Sant Carles, Ibiza",
       reserve: "Reservar",
       menu: "Menú",
       bookTable: "Reservar Mesa",
@@ -122,7 +121,7 @@ const translations: Record<Lang, Dict> = {
       intro: "Déjanos tus datos y te confirmamos por correo. Cuéntanos el día, la hora y el número de personas — del resto nos encargamos nosotros.",
       quick: "Te respondemos pronto · info@lacantinasancarlosibiza.com",
       addressLabel: "Dirección", address: "Plaça de la Iglesia, bajos 4\n07850 Sant Carles, Ibiza",
-      hoursLabel: "Horario", hours: "Cada día excepto miércoles\n13:00 — 16:00 · 19:30 — 23:30",
+      hoursLabel: "Horario", hours: "Cada día excepto miércoles\n19:30 — 23:30",
       contactLabel: "Contacto",
       form: {
         name: "Nombre", email: "Correo", phone: "Teléfono", date: "Día", time: "Hora", guests: "Personas",
@@ -130,8 +129,8 @@ const translations: Record<Lang, Dict> = {
       },
     },
     footer: {
-      whereLabel: "Dónde", where: ["Plaça de la Iglesia, bajos 4", "07850 Sant Carles", "Ibiza, Islas Baleares"],
-      hoursLabel: "Horario", hours: ["Cada día", "13:00 — 16:00 · 19:30 — 23:30", "Miércoles cerrado"],
+      whereLabel: "Dónde", where: ["Plaça de la Iglesia, bajos 4", "07850 Sant Carles", "Ibiza, Islas Baleares"], directions: "Cómo llegar",
+      hoursLabel: "Horario", hours: ["Cada día", "19:30 — 23:30", "Miércoles cerrado"],
       followLabel: "Contacto", waText: "Reservar por correo", menuLink: "Cocina",
       marquee: ["La Cantina de San Carlos", "Cocina mediterránea", "Pasta artesanal", "Ibiza"],
       fireIn: "cocina de fuego en", tagline: "Producto fresco, fuego real y mesa para compartir.",
@@ -141,7 +140,6 @@ const translations: Record<Lang, Dict> = {
 
   en: {
     nav: {
-      announce: "Opening soon · Sant Carles, Ibiza",
       reserve: "Book",
       menu: "Menu",
       bookTable: "Book a Table",
@@ -225,7 +223,7 @@ const translations: Record<Lang, Dict> = {
       intro: "Leave us your details and we'll confirm by email. Tell us the day, time and number of guests — we'll take care of the rest.",
       quick: "We reply soon · info@lacantinasancarlosibiza.com",
       addressLabel: "Address", address: "Plaça de la Iglesia, bajos 4\n07850 Sant Carles, Ibiza",
-      hoursLabel: "Hours", hours: "Every day except Wednesday\n13:00 — 16:00 · 19:30 — 23:30",
+      hoursLabel: "Hours", hours: "Every day except Wednesday\n19:30 — 23:30",
       contactLabel: "Contact",
       form: {
         name: "Name", email: "Email", phone: "Phone", date: "Date", time: "Time", guests: "Guests",
@@ -233,8 +231,8 @@ const translations: Record<Lang, Dict> = {
       },
     },
     footer: {
-      whereLabel: "Where", where: ["Plaça de la Iglesia, bajos 4", "07850 Sant Carles", "Ibiza, Balearic Islands"],
-      hoursLabel: "Hours", hours: ["Every day", "13:00 — 16:00 · 19:30 — 23:30", "Closed Wednesdays"],
+      whereLabel: "Where", where: ["Plaça de la Iglesia, bajos 4", "07850 Sant Carles", "Ibiza, Balearic Islands"], directions: "Get directions",
+      hoursLabel: "Hours", hours: ["Every day", "19:30 — 23:30", "Closed Wednesdays"],
       followLabel: "Contact", waText: "Book by email", menuLink: "Kitchen",
       marquee: ["La Cantina de San Carlos", "Mediterranean cooking", "Handmade pasta", "Ibiza"],
       fireIn: "fire cooking in", tagline: "Fresh produce, real fire and a table to share.",
