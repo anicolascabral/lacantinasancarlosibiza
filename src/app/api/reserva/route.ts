@@ -69,6 +69,18 @@ async function verifyTurnstile(token: string | undefined): Promise<boolean> {
 const esc = (s: string) =>
   s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
 
+// Keep an international dialling prefix on the phone. iOS autofill often drops the
+// country code (it knows the device region) so a bare national number arrives
+// without it — default those to Spain (+34), where the restaurant is. Numbers that
+// already carry a prefix (+… or 00…) are left exactly as the customer entered them.
+function normalizePhone(p: string): string {
+  const t = p.trim();
+  if (!t || t === "—") return t;
+  if (t.startsWith("+")) return t;
+  if (t.startsWith("00")) return `+${t.slice(2).trim()}`;
+  return /\d/.test(t) ? `+34 ${t}` : t;
+}
+
 function detailsTable(rows: [string, string][]) {
   const body = rows
     .map(
@@ -229,10 +241,11 @@ export async function POST(request: Request) {
   const v = (s?: string) => (s && s.trim()) || "—";
   const name = v(d.name);
   const email = (d.email || "").trim();
+  const phone = normalizePhone(v(d.phone));
 
   const rows: [string, string][] = es
-    ? [["Nombre", name], ["Correo", v(d.email)], ["Teléfono", v(d.phone)], ["Día", v(d.date)], ["Hora", v(d.time)], ["Personas", v(d.guests)], ["Mensaje", v(d.message)]]
-    : [["Name", name], ["Email", v(d.email)], ["Phone", v(d.phone)], ["Date", v(d.date)], ["Time", v(d.time)], ["Guests", v(d.guests)], ["Message", v(d.message)]];
+    ? [["Nombre", name], ["Correo", v(d.email)], ["Teléfono", phone], ["Día", v(d.date)], ["Hora", v(d.time)], ["Personas", v(d.guests)], ["Mensaje", v(d.message)]]
+    : [["Name", name], ["Email", v(d.email)], ["Phone", phone], ["Date", v(d.date)], ["Time", v(d.time)], ["Guests", v(d.guests)], ["Message", v(d.message)]];
   const rowsHtml = detailsTable(rows);
   const tableText = rows.map(([k, val]) => `${k}: ${val}`).join("\n");
 
@@ -251,7 +264,7 @@ export async function POST(request: Request) {
       time: d.time,
       name,
       guests: v(d.guests),
-      phone: v(d.phone),
+      phone,
       email: v(d.email),
       message: v(d.message),
       es,
