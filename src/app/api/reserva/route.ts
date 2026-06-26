@@ -116,10 +116,11 @@ function detailsTable(rows: [string, string][]) {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-// Build an iCalendar event (1h30) for a booking, anchored to Europe/Madrid so the
+// Build an iCalendar INVITE (1h30) for a booking, anchored to Europe/Madrid so the
 // restaurant's calendar shows the right local time regardless of where it's read.
-// Attached (METHOD:PUBLISH) to the single branded notification email so the body
-// keeps its layout; tapping the .ics adds the event (details in the title).
+// Sent as METHOD:REQUEST (customer = organizer, restaurant `attendee` = invitee) so
+// the mail client renders it as a real event card with the booking details and an
+// "Accept" that drops it into the calendar — not just a file attachment.
 // Returns null when the booking has no usable date/time (nothing to schedule).
 function bookingIcs(opts: {
   date?: string;
@@ -129,6 +130,7 @@ function bookingIcs(opts: {
   phone: string;
   email: string;
   message: string;
+  attendee: string; // restaurant mailbox (info@) that receives the invite
   es: boolean;
 }): string | null {
   const date = (opts.date || "").trim(); // YYYY-MM-DD (from <input type="date">)
@@ -161,12 +163,16 @@ function bookingIcs(opts: {
     ? [`Nombre: ${opts.name}`, `Personas: ${opts.guests}`, `Teléfono: ${opts.phone}`, `Correo: ${opts.email}`, `Mensaje: ${opts.message}`]
     : [`Name: ${opts.name}`, `Guests: ${opts.guests}`, `Phone: ${opts.phone}`, `Email: ${opts.email}`, `Message: ${opts.message}`];
 
+  // The customer "organizes" the request; the restaurant mailbox is the invitee.
+  const organizerMail = has(opts.email) && opts.email.includes("@") ? opts.email.trim() : opts.attendee;
+  const organizerCN = (organizerMail === opts.attendee ? BRAND : opts.name).replace(/"/g, "");
+
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//La Cantina de San Carlos//Reservas//ES",
     "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
+    "METHOD:REQUEST",
     "BEGIN:VTIMEZONE",
     "TZID:Europe/Madrid",
     "BEGIN:DAYLIGHT",
@@ -189,9 +195,12 @@ function bookingIcs(opts: {
     `DTSTAMP:${stamp}`,
     `DTSTART;TZID=Europe/Madrid:${dtStart}`,
     `DTEND;TZID=Europe/Madrid:${dtEnd}`,
+    `ORGANIZER;CN="${organizerCN}":mailto:${organizerMail}`,
+    `ATTENDEE;CN="${BRAND}";ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:${opts.attendee}`,
     `SUMMARY:${fold(summary)}`,
     `DESCRIPTION:${fold(descLines.join("\n"))}`,
     `LOCATION:${fold(ADDRESS)}`,
+    "SEQUENCE:0",
     "STATUS:CONFIRMED",
     "TRANSP:OPAQUE",
     "END:VEVENT",
@@ -286,9 +295,9 @@ export async function POST(request: Request) {
     const notifLead = es
       ? `Acabas de recibir una solicitud de reserva desde la web. Responde a este correo para contestar directamente a <strong style="color:${INK}">${esc(name)}</strong>.`
       : `A new booking request just came in from the website. Reply to this email to answer <strong style="color:${INK}">${esc(name)}</strong> directly.`;
-    // Calendar event (1h30) for the restaurant — only when we have a date & time.
-    // Attached as a .ics file so the branded email keeps its layout; tap it to
-    // add the booking (with all details in the title) to the calendar.
+    // Calendar invite (1h30) for the restaurant — only when we have a date & time.
+    // Sent as a REQUEST so it arrives as a real event card with the booking data
+    // and an "Accept" that lands it in the calendar (not a file attachment).
     const ics = bookingIcs({
       date: d.date,
       time: d.time,
@@ -297,6 +306,7 @@ export async function POST(request: Request) {
       phone,
       email: v(d.email),
       message: v(d.message),
+      attendee: user,
       es,
     });
     // This one is critical — retry it. If it ultimately fails we report
@@ -316,7 +326,7 @@ export async function POST(request: Request) {
         aside: es ? "Datos recibidos a través de lacantinasancarlosibiza.com" : "Received via lacantinasancarlosibiza.com",
       }),
       ...(ics
-        ? { attachments: [{ filename: "reserva.ics", content: ics, contentType: "text/calendar; charset=utf-8; method=PUBLISH" }] }
+        ? { icalEvent: { method: "REQUEST", filename: "reserva.ics", content: ics } }
         : {}),
     });
 
