@@ -44,25 +44,26 @@ type Payload = {
   lang?: "es" | "en";
 };
 
-// Verify the Cloudflare Turnstile token server-side. Only enforced when BOTH the
-// secret AND the public site key are configured — if the public key is missing the
-// browser widget never renders (so no token exists) and enforcing the secret would
-// reject every real booking. In that case we skip, keeping the form working.
+// Verify the Cloudflare Turnstile token server-side — OPPORTUNISTICALLY. We only
+// reject when a token is present AND fails verification. If no token arrives (the
+// widget didn't render — e.g. the public site key wasn't baked into the build, or
+// it was blocked on the visitor's device) we do NOT block: a misconfigured captcha
+// must never reject real bookings. The honeypot + time-trap remain as anti-spam.
 async function verifyTurnstile(token: string | undefined): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-  if (!secret || !siteKey) return true;
-  if (!token) return false;
+  if (!secret) return true; // feature off
+  const t = (token || "").trim();
+  if (!t) return true; // no token → can't enforce; let honeypot/time-trap guard
   try {
     const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ secret, response: token }),
+      body: new URLSearchParams({ secret, response: t }),
     });
     const json = (await res.json()) as { success?: boolean };
     return !!json.success;
   } catch {
-    return false;
+    return true; // Cloudflare unreachable → don't block the booking
   }
 }
 
