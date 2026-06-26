@@ -44,11 +44,14 @@ type Payload = {
   lang?: "es" | "en";
 };
 
-// Verify the Cloudflare Turnstile token server-side. Returns true when there's
-// no secret configured (feature off) so the form keeps working until set up.
+// Verify the Cloudflare Turnstile token server-side. Only enforced when BOTH the
+// secret AND the public site key are configured — if the public key is missing the
+// browser widget never renders (so no token exists) and enforcing the secret would
+// reject every real booking. In that case we skip, keeping the form working.
 async function verifyTurnstile(token: string | undefined): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true;
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  if (!secret || !siteKey) return true;
   if (!token) return false;
   try {
     const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
