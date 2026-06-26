@@ -84,10 +84,10 @@ function detailsTable(rows: [string, string][]) {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-// Build an iCalendar INVITE (1h30) for a booking, anchored to Europe/Madrid so the
+// Build an iCalendar event (1h30) for a booking, anchored to Europe/Madrid so the
 // restaurant's calendar shows the right local time regardless of where it's read.
-// Sent as METHOD:REQUEST with the restaurant mailbox (`attendee`) invited, so the
-// mail client shows "Accept" and the event lands in the calendar (not just a file).
+// Attached (METHOD:PUBLISH) to the single branded notification email so the body
+// keeps its layout; tapping the .ics adds the event (details in the title).
 // Returns null when the booking has no usable date/time (nothing to schedule).
 function bookingIcs(opts: {
   date?: string;
@@ -97,7 +97,6 @@ function bookingIcs(opts: {
   phone: string;
   email: string;
   message: string;
-  attendee: string; // restaurant mailbox (info@) that receives the invite
   es: boolean;
 }): string | null {
   const date = (opts.date || "").trim(); // YYYY-MM-DD (from <input type="date">)
@@ -130,16 +129,12 @@ function bookingIcs(opts: {
     ? [`Nombre: ${opts.name}`, `Personas: ${opts.guests}`, `Teléfono: ${opts.phone}`, `Correo: ${opts.email}`, `Mensaje: ${opts.message}`]
     : [`Name: ${opts.name}`, `Guests: ${opts.guests}`, `Phone: ${opts.phone}`, `Email: ${opts.email}`, `Message: ${opts.message}`];
 
-  // The customer "organizes" the request; the restaurant mailbox is the invitee.
-  const organizerMail = has(opts.email) && opts.email.includes("@") ? opts.email.trim() : opts.attendee;
-  const organizerCN = (organizerMail === opts.attendee ? BRAND : opts.name).replace(/"/g, "");
-
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//La Cantina de San Carlos//Reservas//ES",
     "CALSCALE:GREGORIAN",
-    "METHOD:REQUEST",
+    "METHOD:PUBLISH",
     "BEGIN:VTIMEZONE",
     "TZID:Europe/Madrid",
     "BEGIN:DAYLIGHT",
@@ -162,12 +157,9 @@ function bookingIcs(opts: {
     `DTSTAMP:${stamp}`,
     `DTSTART;TZID=Europe/Madrid:${dtStart}`,
     `DTEND;TZID=Europe/Madrid:${dtEnd}`,
-    `ORGANIZER;CN="${organizerCN}":mailto:${organizerMail}`,
-    `ATTENDEE;CN="${BRAND}";ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:${opts.attendee}`,
     `SUMMARY:${fold(summary)}`,
     `DESCRIPTION:${fold(descLines.join("\n"))}`,
     `LOCATION:${fold(ADDRESS)}`,
-    "SEQUENCE:0",
     "STATUS:CONFIRMED",
     "TRANSP:OPAQUE",
     "END:VEVENT",
@@ -252,6 +244,8 @@ export async function POST(request: Request) {
       ? `Acabas de recibir una solicitud de reserva desde la web. Responde a este correo para contestar directamente a <strong style="color:${INK}">${esc(name)}</strong>.`
       : `A new booking request just came in from the website. Reply to this email to answer <strong style="color:${INK}">${esc(name)}</strong> directly.`;
     // Calendar event (1h30) for the restaurant — only when we have a date & time.
+    // Attached as a .ics file so the branded email keeps its layout; tap it to
+    // add the booking (with all details in the title) to the calendar.
     const ics = bookingIcs({
       date: d.date,
       time: d.time,
@@ -260,7 +254,6 @@ export async function POST(request: Request) {
       phone: v(d.phone),
       email: v(d.email),
       message: v(d.message),
-      attendee: user,
       es,
     });
     await transporter.sendMail({
@@ -277,34 +270,12 @@ export async function POST(request: Request) {
         rowsHtml,
         aside: es ? "Datos recibidos a través de lacantinasancarlosibiza.com" : "Received via lacantinasancarlosibiza.com",
       }),
+      ...(ics
+        ? { attachments: [{ filename: "reserva.ics", content: ics, contentType: "text/calendar; charset=utf-8; method=PUBLISH" }] }
+        : {}),
     });
 
-    // 2) Calendar invite as a SEPARATE email — when an event is attached, mail
-    // clients replace the HTML body with the invite card, which would hide the
-    // branded notification above. Sending it on its own keeps both: the pretty
-    // email with all the data, plus a "Accept" invite that lands in the calendar.
-    if (ics) {
-      const inviteLead = es
-        ? `Pulsa <strong style="color:${INK}">Sí / Aceptar</strong> para guardar esta reserva (1h30) en tu calendario.`
-        : `Tap <strong style="color:${INK}">Yes / Accept</strong> to save this booking (1h30) to your calendar.`;
-      await transporter.sendMail({
-        from: `"${BRAND} · Reservas" <${user}>`,
-        to: user,
-        replyTo: email ? { name, address: email } : undefined,
-        subject: es ? `📅 Reserva en tu calendario · ${name}` : `📅 Booking for your calendar · ${name}`,
-        text: `${es ? "Añade esta reserva a tu calendario" : "Add this booking to your calendar"}:\n\n${tableText}\n`,
-        html: shell({
-          es,
-          heading: es ? "Añadir al calendario" : "Add to calendar",
-          lead: inviteLead,
-          rowsHtml: "",
-          aside: es ? "Acepta el evento para guardarlo en tu calendario." : "Accept the event to save it to your calendar.",
-        }),
-        icalEvent: { method: "REQUEST", filename: "reserva.ics", content: ics },
-      });
-    }
-
-    // 3) Confirmation to the customer (best effort — only if they gave an email).
+    // 2) Confirmation to the customer (best effort — only if they gave an email).
     if (email) {
       const lead = es
         ? "¡Gracias por pensar en nosotros! Hemos recibido tu solicitud de reserva y te confirmaremos en muy poco por este mismo correo."
@@ -312,18 +283,21 @@ export async function POST(request: Request) {
       const aside = es
         ? "¿Necesitas cambiar algo? Solo responde a este correo y te echamos una mano. Nos vemos junto al fuego. 🔥"
         : "Need to change anything? Just reply to this email and we'll help. See you by the fire. 🔥";
+      const directionsLabel = es ? "Cómo llegar" : "Get directions";
+      // Quick directions link so the customer has it handy.
+      const asideHtml = `📍 <a href="${MAPS_URL}" style="color:${INK};font-weight:bold;text-decoration:underline">${directionsLabel}</a> · ${aside}`;
       await transporter.sendMail({
         from: `"${BRAND}" <${user}>`,
         to: email,
         replyTo: user,
         subject: es ? `Hemos recibido tu reserva · ${BRAND}` : `We've received your booking · ${BRAND}`,
-        text: `${es ? `Hola ${name},` : `Hi ${name},`}\n\n${lead}\n\n${es ? "Tu solicitud" : "Your request"}:\n${tableText}\n\n${aside}\n\n${BRAND} · Ibiza`,
+        text: `${es ? `Hola ${name},` : `Hi ${name},`}\n\n${lead}\n\n${es ? "Tu solicitud" : "Your request"}:\n${tableText}\n\n📍 ${directionsLabel}: ${MAPS_URL}\n\n${aside}\n\n${BRAND} · Ibiza`,
         html: shell({
           es,
           heading: es ? `Hola ${name},` : `Hi ${name},`,
           lead,
           rowsHtml,
-          aside,
+          aside: asideHtml,
         }),
       });
     }
