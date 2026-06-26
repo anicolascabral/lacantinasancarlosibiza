@@ -131,17 +131,25 @@ export default function Reservation() {
           lang,
         }),
       });
-      const json = await res.json().catch(() => ({ ok: false }));
+      const json = (await res.json().catch(() => ({ ok: false }))) as { ok?: boolean; error?: string };
       if (json.ok) {
         setStatus("ok");
         form.reset();
         return;
       }
-      // Not configured yet / upstream failed → open the mail app so the booking
-      // is never lost.
-      mailtoFallback(get);
-      setStatus("ok");
+      // Server genuinely can't send (not set up) → open the mail app so the
+      // booking is never lost.
+      if (json.error === "not_configured") {
+        mailtoFallback(get);
+        setStatus("ok");
+        return;
+      }
+      // Transient/other server error → ask to retry instead of surprising the
+      // visitor with their mail app.
+      setErrMsg(msg.error);
+      setStatus("error");
     } catch {
+      // Couldn't reach the server at all → mail app fallback.
       mailtoFallback(get);
       setStatus("ok");
     }

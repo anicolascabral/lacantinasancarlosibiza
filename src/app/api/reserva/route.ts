@@ -81,6 +81,26 @@ function normalizePhone(p: string): string {
   return /\d/.test(t) ? `+34 ${t}` : t;
 }
 
+// Send with a few retries — Zoho SMTP over Vercel serverless occasionally times
+// out (cold starts), and a single failure shouldn't drop a booking.
+async function sendWithRetry(
+  transporter: nodemailer.Transporter,
+  message: Parameters<nodemailer.Transporter["sendMail"]>[0],
+  tries = 3,
+): Promise<void> {
+  let lastErr: unknown;
+  for (let i = 0; i < tries; i++) {
+    try {
+      await transporter.sendMail(message);
+      return;
+    } catch (e) {
+      lastErr = e;
+      await new Promise((r) => setTimeout(r, 500 * (i + 1)));
+    }
+  }
+  throw lastErr;
+}
+
 function detailsTable(rows: [string, string][]) {
   const body = rows
     .map(
@@ -249,7 +269,17 @@ export async function POST(request: Request) {
   const rowsHtml = detailsTable(rows);
   const tableText = rows.map(([k, val]) => `${k}: ${val}`).join("\n");
 
-  const transporter = nodemailer.createTransport({ host, port: 465, secure: true, auth: { user, pass } });
+  const transporter = nodemailer.createTransport({
+    host,
+    port: 465,
+    secure: true,
+    auth: { user, pass },
+    pool: true, // reuse one connection for both emails (faster, fewer handshakes)
+    maxConnections: 1,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 20000,
+  });
 
   try {
     // 1) Notification to the restaurant — reply-to the customer.
@@ -269,7 +299,9 @@ export async function POST(request: Request) {
       message: v(d.message),
       es,
     });
-    await transporter.sendMail({
+    // This one is critical — retry it. If it ultimately fails we report
+    // send_failed so the form can fall back.
+    await sendWithRetry(transporter, {
       from: `"${BRAND} · Reservas" <${user}>`,
       to: user,
       // Reply / Reply-All from info@ goes straight to whoever booked.
@@ -288,7 +320,8 @@ export async function POST(request: Request) {
         : {}),
     });
 
-    // 2) Confirmation to the customer (best effort — only if they gave an email).
+    // 2) Confirmation to the customer — BEST EFFORT. Its failure must never fail
+    // the booking (the restaurant already got it above), so it's caught here.
     if (email) {
       const lead = es
         ? "¡Gracias por pensar en nosotros! Hemos recibido tu solicitud de reserva y te confirmaremos en muy poco por este mismo correo."
@@ -299,22 +332,27 @@ export async function POST(request: Request) {
       const directionsLabel = es ? "Cómo llegar" : "Get directions";
       // Quick directions link so the customer has it handy.
       const asideHtml = `📍 <a href="${MAPS_URL}" style="color:${INK};font-weight:bold;text-decoration:underline">${directionsLabel}</a> · ${aside}`;
-      await transporter.sendMail({
-        from: `"${BRAND}" <${user}>`,
-        to: email,
-        replyTo: user,
-        subject: es ? `Hemos recibido tu reserva · ${BRAND}` : `We've received your booking · ${BRAND}`,
-        text: `${es ? `Hola ${name},` : `Hi ${name},`}\n\n${lead}\n\n${es ? "Tu solicitud" : "Your request"}:\n${tableText}\n\n📍 ${directionsLabel}: ${MAPS_URL}\n\n${aside}\n\n${BRAND} · Ibiza`,
-        html: shell({
-          es,
-          heading: es ? `Hola ${name},` : `Hi ${name},`,
-          lead,
-          rowsHtml,
-          aside: asideHtml,
-        }),
-      });
+      try {
+        await sendWithRetry(transporter, {
+          from: `"${BRAND}" <${user}>`,
+          to: email,
+          replyTo: user,
+          subject: es ? `Hemos recibido tu reserva · ${BRAND}` : `We've received your booking · ${BRAND}`,
+          text: `${es ? `Hola ${name},` : `Hi ${name},`}\n\n${lead}\n\n${es ? "Tu solicitud" : "Your request"}:\n${tableText}\n\n📍 ${directionsLabel}: ${MAPS_URL}\n\n${aside}\n\n${BRAND} · Ibiza`,
+          html: shell({
+            es,
+            heading: es ? `Hola ${name},` : `Hi ${name},`,
+            lead,
+            rowsHtml,
+            aside: asideHtml,
+          }),
+        }, 2);
+      } catch {
+        // ignore — the restaurant already received the booking
+      }
     }
 
+    transporter.close();
     return Response.json({ ok: true });
   } catch (err) {
     return Response.json({ ok: false, error: "send_failed", detail: String(err).slice(0, 200) }, { status: 502 });
