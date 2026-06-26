@@ -277,12 +277,34 @@ export async function POST(request: Request) {
         rowsHtml,
         aside: es ? "Datos recibidos a través de lacantinasancarlosibiza.com" : "Received via lacantinasancarlosibiza.com",
       }),
-      ...(ics
-        ? { icalEvent: { method: "REQUEST", filename: "reserva.ics", content: ics } }
-        : {}),
     });
 
-    // 2) Confirmation to the customer (best effort — only if they gave an email).
+    // 2) Calendar invite as a SEPARATE email — when an event is attached, mail
+    // clients replace the HTML body with the invite card, which would hide the
+    // branded notification above. Sending it on its own keeps both: the pretty
+    // email with all the data, plus a "Accept" invite that lands in the calendar.
+    if (ics) {
+      const inviteLead = es
+        ? `Pulsa <strong style="color:${INK}">Sí / Aceptar</strong> para guardar esta reserva (1h30) en tu calendario.`
+        : `Tap <strong style="color:${INK}">Yes / Accept</strong> to save this booking (1h30) to your calendar.`;
+      await transporter.sendMail({
+        from: `"${BRAND} · Reservas" <${user}>`,
+        to: user,
+        replyTo: email ? { name, address: email } : undefined,
+        subject: es ? `📅 Reserva en tu calendario · ${name}` : `📅 Booking for your calendar · ${name}`,
+        text: `${es ? "Añade esta reserva a tu calendario" : "Add this booking to your calendar"}:\n\n${tableText}\n`,
+        html: shell({
+          es,
+          heading: es ? "Añadir al calendario" : "Add to calendar",
+          lead: inviteLead,
+          rowsHtml: "",
+          aside: es ? "Acepta el evento para guardarlo en tu calendario." : "Accept the event to save it to your calendar.",
+        }),
+        icalEvent: { method: "REQUEST", filename: "reserva.ics", content: ics },
+      });
+    }
+
+    // 3) Confirmation to the customer (best effort — only if they gave an email).
     if (email) {
       const lead = es
         ? "¡Gracias por pensar en nosotros! Hemos recibido tu solicitud de reserva y te confirmaremos en muy poco por este mismo correo."
