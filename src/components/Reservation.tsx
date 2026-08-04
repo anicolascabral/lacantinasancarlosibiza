@@ -58,6 +58,9 @@ export default function Reservation() {
     pastDay: es
       ? "Esa fecha ya pasó. Elige un día a partir de hoy."
       : "That date has passed. Please pick today or later.",
+    tooLateToday: es
+      ? "Para reservar hoy, llámanos directamente — a partir de las 19:00 ya no aceptamos reservas online para el mismo día."
+      : "To book for today, please call us — after 19:00 we no longer take same-day bookings online.",
   };
 
   function mailtoFallback(get: (k: string) => string) {
@@ -78,6 +81,8 @@ export default function Reservation() {
     today.setHours(0, 0, 0, 0);
     if (picked < today) return msg.pastDay;
     if (picked.getDay() === 3) return msg.closedWed; // Wednesday — closed
+    const now = new Date();
+    if (picked.getTime() === today.getTime() && now.getHours() >= 19) return msg.tooLateToday;
     return "";
   }
 
