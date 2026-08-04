@@ -376,6 +376,10 @@ input[type="time"].field {
   appearance: none;
   display: flex;
   align-items: center;
+  /* Force the light UI for the native picker/value text. Without this, iOS in
+     dark mode renders the date/time value in white — invisible on our white
+     field background. */
+  color-scheme: light;
 }
 .field::-webkit-date-and-time-value {
   text-align: left;
