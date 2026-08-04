@@ -250,15 +250,25 @@ export default function Reservation() {
               {status === "idle" && <span aria-hidden className="transition-transform group-hover:translate-x-1">↗</span>}
             </button>
 
-            <p className="sm:col-span-2 mt-1 text-center transition-colors" aria-live="polite" style={{ color: status === "ok" ? "var(--ink)" : status === "error" ? "#a23" : "var(--muted)" }}>
-              {status === "ok" ? (
-                <span className="font-body text-sm">{msg.ok}</span>
-              ) : status === "error" ? (
-                <span className="font-body text-sm">{errMsg || msg.error}</span>
-              ) : (
+            {status === "ok" || status === "error" ? (
+              <p
+                className="sm:col-span-2 mt-1 text-center font-body text-sm transition-colors"
+                aria-live="polite"
+                style={{
+                  color: status === "ok" ? "var(--ink)" : "#a23",
+                  background: status === "ok" ? "var(--paper-2)" : "rgba(162,34,51,0.08)",
+                  border: `1px solid ${status === "ok" ? "var(--line)" : "rgba(162,34,51,0.25)"}`,
+                  borderRadius: "6px",
+                  padding: "0.85rem 1rem",
+                }}
+              >
+                {status === "ok" ? msg.ok : errMsg || msg.error}
+              </p>
+            ) : (
+              <p className="sm:col-span-2 mt-1 text-center" aria-live="polite" style={{ color: "var(--muted)" }}>
                 <span className="eyebrow" style={{ fontSize: "0.58rem" }}>{r.quick}</span>
-              )}
-            </p>
+              </p>
+            )}
           </form>
         </Reveal>
       </div>
