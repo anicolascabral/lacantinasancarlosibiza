@@ -3,6 +3,7 @@ import "../globals.css";
 import { LangProvider, type Lang } from "@/lib/i18n";
 import StructuredData from "@/components/StructuredData";
 import { SITE_URL } from "@/lib/site";
+import { Analytics } from "@vercel/analytics/next";
 
 // Only Spanish and English are valid locales; anything else 404s.
 export const dynamicParams = false;
@@ -110,6 +111,7 @@ export default async function RootLayout({
         <LangProvider initialLang={lang}>{children}</LangProvider>
         <div className="grain-overlay" aria-hidden />
         <StructuredData lang={lang} siteUrl={siteUrl} />
+        <Analytics />
       </body>
     </html>
   );
