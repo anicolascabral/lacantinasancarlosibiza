@@ -205,7 +205,7 @@ export default function Reservation() {
             </div>
             <div className="field-group sm:col-span-2">
               <label className="field-label">{f.date}</label>
-              <input name="date" type="date" className="field" onChange={handleDateChange} />
+              <input name="date" type="date" required className="field" onChange={handleDateChange} />
             </div>
             <div className="field-group">
               <label className="field-label">{f.time}</label>

@@ -368,17 +368,13 @@ body {
   background: var(--paper-2);
   box-shadow: 0 0 0 3px rgba(24,22,19,0.06);
 }
-/* Native date / time inputs on iOS — reset the platform chrome and stop the
-   value text from being vertically clipped (a long-standing Safari bug). */
+/* Native date / time inputs on iOS. Keep the native appearance — stripping it
+   with -webkit-appearance:none breaks the picker's value commit on some iOS
+   versions (the field renders blank after confirming a date). Only force the
+   light color scheme, since iOS in dark mode renders the value in white,
+   invisible on our white field background. */
 input[type="date"].field,
 input[type="time"].field {
-  -webkit-appearance: none;
-  appearance: none;
-  display: flex;
-  align-items: center;
-  /* Force the light UI for the native picker/value text. Without this, iOS in
-     dark mode renders the date/time value in white — invisible on our white
-     field background. */
   color-scheme: light;
 }
 .field::-webkit-date-and-time-value {
@@ -386,10 +382,21 @@ input[type="time"].field {
   margin: 0;
   min-height: 1.4em;
   line-height: 1.4;
+  color: var(--ink);
 }
 .field::-webkit-datetime-edit {
   padding: 0;
   line-height: 1.4;
+  color: var(--ink);
+}
+.field::-webkit-datetime-edit-text,
+.field::-webkit-datetime-edit-day-field,
+.field::-webkit-datetime-edit-month-field,
+.field::-webkit-datetime-edit-year-field,
+.field::-webkit-datetime-edit-hour-field,
+.field::-webkit-datetime-edit-minute-field,
+.field::-webkit-datetime-edit-ampm-field {
+  color: var(--ink);
 }
 select.field {
   appearance: none;
