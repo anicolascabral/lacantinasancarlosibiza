@@ -67,8 +67,8 @@ export default function Reservation() {
       ? "Para reservar hoy, llámanos directamente — a partir de las 19:00 ya no aceptamos reservas online para el mismo día."
       : "To book for today, please call us — after 19:00 we no longer take same-day bookings online.",
     closedExtra: es
-      ? `Hoy no aceptamos reservas por causa de fuerza mayor. Escríbenos a ${EMAIL} o llámanos y con gusto te ayudamos.`
-      : `We're not taking bookings today due to unforeseen circumstances. Please email ${EMAIL} or call us and we'll help.`,
+      ? `Por la alerta de tormenta, hoy nos tomamos el día libre de reservas 🌩️ ¡Mañana volvemos con todo! Si necesitas algo, escríbenos a ${EMAIL}.`
+      : `Due to the storm warning, we're taking the day off from bookings 🌩️ Back tomorrow! Need something meanwhile, email us at ${EMAIL}.`,
   };
 
   function mailtoFallback(get: (k: string) => string) {
