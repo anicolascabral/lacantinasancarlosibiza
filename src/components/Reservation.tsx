@@ -29,6 +29,11 @@ export default function Reservation() {
     TIME_SLOTS.push(`${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
   }
 
+  // Ad-hoc full-day closures (storms, holidays, etc.) on top of the regular
+  // Wednesday closure below. Add/remove "YYYY-MM-DD" entries as needed —
+  // dates in the past are harmless to leave in.
+  const EXTRA_CLOSED_DATES: string[] = ["2026-08-20"];
+
   // Load the Turnstile script once (only if a site key is configured).
   useEffect(() => {
     if (!TURNSTILE_SITEKEY || document.querySelector("script[data-cf-turnstile]")) return;
@@ -61,6 +66,9 @@ export default function Reservation() {
     tooLateToday: es
       ? "Para reservar hoy, llámanos directamente — a partir de las 19:00 ya no aceptamos reservas online para el mismo día."
       : "To book for today, please call us — after 19:00 we no longer take same-day bookings online.",
+    closedExtra: es
+      ? `Hoy no aceptamos reservas por causa de fuerza mayor. Escríbenos a ${EMAIL} o llámanos y con gusto te ayudamos.`
+      : `We're not taking bookings today due to unforeseen circumstances. Please email ${EMAIL} or call us and we'll help.`,
   };
 
   function mailtoFallback(get: (k: string) => string) {
@@ -75,6 +83,7 @@ export default function Reservation() {
   // Returns an error message for an invalid booking date (past / Wednesday), or "".
   function dateError(dateStr: string): string {
     if (!dateStr) return "";
+    if (EXTRA_CLOSED_DATES.includes(dateStr)) return msg.closedExtra;
     const [yy, mm, dd] = dateStr.split("-").map(Number);
     const picked = new Date(yy, mm - 1, dd);
     const today = new Date();
