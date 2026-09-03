@@ -29,10 +29,9 @@ export default function Reservation() {
     TIME_SLOTS.push(`${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
   }
 
-  // Ad-hoc full-day closures (storms, holidays, etc.) on top of the regular
-  // Wednesday closure below. Add/remove "YYYY-MM-DD" entries as needed —
-  // dates in the past are harmless to leave in.
-  const EXTRA_CLOSED_DATES: string[] = ["2026-08-20"];
+  // Ad-hoc full-day closures (storms, holidays, private events…), set from
+  // the reservations dashboard — not hardcoded here anymore.
+  const [closedDates, setClosedDates] = useState<string[]>([]);
 
   // Load the Turnstile script once (only if a site key is configured).
   useEffect(() => {
@@ -43,6 +42,13 @@ export default function Reservation() {
     s.defer = true;
     s.setAttribute("data-cf-turnstile", "1");
     document.head.appendChild(s);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/closures")
+      .then((r) => r.json())
+      .then((d) => setClosedDates(d.dates || []))
+      .catch(() => {});
   }, []);
 
   const ph = es
@@ -67,8 +73,8 @@ export default function Reservation() {
       ? "Para reservar hoy, llámanos directamente — a partir de las 19:00 ya no aceptamos reservas online para el mismo día."
       : "To book for today, please call us — after 19:00 we no longer take same-day bookings online.",
     closedExtra: es
-      ? `Por la alerta de tormenta, hoy nos tomamos el día libre de reservas 🌩️ ¡Mañana volvemos con todo! Si necesitas algo, escríbenos a ${EMAIL}.`
-      : `Due to the storm warning, we're taking the day off from bookings 🌩️ Back tomorrow! Need something meanwhile, email us at ${EMAIL}.`,
+      ? `Ese día no aceptamos reservas online. Escríbenos a ${EMAIL} o llámanos y te ayudamos igual 🙂`
+      : `We're not taking online bookings that day. Email us at ${EMAIL} or give us a call and we'll help out 🙂`,
   };
 
   function mailtoFallback(get: (k: string) => string) {
@@ -83,7 +89,7 @@ export default function Reservation() {
   // Returns an error message for an invalid booking date (past / Wednesday), or "".
   function dateError(dateStr: string): string {
     if (!dateStr) return "";
-    if (EXTRA_CLOSED_DATES.includes(dateStr)) return msg.closedExtra;
+    if (closedDates.includes(dateStr)) return msg.closedExtra;
     const [yy, mm, dd] = dateStr.split("-").map(Number);
     const picked = new Date(yy, mm - 1, dd);
     const today = new Date();

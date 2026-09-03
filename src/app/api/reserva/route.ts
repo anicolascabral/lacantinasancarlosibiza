@@ -13,23 +13,22 @@
 // Until they're set the route reports "not_configured" and the form falls back
 // to opening the visitor's mail app, so a booking is never lost.
 
-import nodemailer from "nodemailer";
-import { ADDRESS, PHONE, INSTAGRAM, EMAIL, MAPS_URL } from "@/lib/site";
+import { ADDRESS, MAPS_URL } from "@/lib/site";
+import { addReservation } from "@/lib/reservations";
+import {
+  BRAND,
+  INK,
+  bookingRows,
+  createTransporter,
+  detailsTable,
+  esc,
+  formatBookingDate,
+  normalizePhone,
+  sendWithRetry,
+  shell,
+} from "@/lib/email";
 
 export const runtime = "nodejs";
-
-const BRAND = "La Cantina de San Carlos";
-const SITE = "https://www.lacantinasancarlosibiza.com";
-const LOGO = `${SITE}/images/logo-mark-white.png`;
-
-// Brand palette (mirrors the site)
-const INK = "#181613";
-const PAPER = "#ECE5D6";
-const CARD = "#F3EEE3";
-const WHITE = "#FBF9F4";
-const SOFT = "#4A453E";
-const MUTED = "#8C857A";
-const LINE = "#e2dac9";
 
 type Payload = {
   company?: string; // honeypot
@@ -65,54 +64,6 @@ async function verifyTurnstile(token: string | undefined): Promise<boolean> {
   } catch {
     return true; // Cloudflare unreachable → don't block the booking
   }
-}
-
-const esc = (s: string) =>
-  s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
-
-// Keep an international dialling prefix on the phone. iOS autofill often drops the
-// country code (it knows the device region) so a bare national number arrives
-// without it — default those to Spain (+34), where the restaurant is. Numbers that
-// already carry a prefix (+… or 00…) are left exactly as the customer entered them.
-function normalizePhone(p: string): string {
-  const t = p.trim();
-  if (!t || t === "—") return t;
-  if (t.startsWith("+")) return t;
-  if (t.startsWith("00")) return `+${t.slice(2).trim()}`;
-  return /\d/.test(t) ? `+34 ${t}` : t;
-}
-
-// Send with a few retries — Zoho SMTP over Vercel serverless occasionally times
-// out (cold starts), and a single failure shouldn't drop a booking.
-async function sendWithRetry(
-  transporter: nodemailer.Transporter,
-  message: Parameters<nodemailer.Transporter["sendMail"]>[0],
-  tries = 3,
-): Promise<void> {
-  let lastErr: unknown;
-  for (let i = 0; i < tries; i++) {
-    try {
-      await transporter.sendMail(message);
-      return;
-    } catch (e) {
-      lastErr = e;
-      await new Promise((r) => setTimeout(r, 500 * (i + 1)));
-    }
-  }
-  throw lastErr;
-}
-
-function detailsTable(rows: [string, string][]) {
-  const body = rows
-    .map(
-      ([k, val], i) =>
-        `<tr>` +
-        `<td style="padding:11px 16px;border-top:${i === 0 ? "0" : `1px solid ${LINE}`};color:${MUTED};font:700 11px/1.4 Arial,sans-serif;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;vertical-align:top">${esc(k)}</td>` +
-        `<td style="padding:11px 16px 11px 0;border-top:${i === 0 ? "0" : `1px solid ${LINE}`};color:${INK};font:600 15px/1.55 Arial,Helvetica,sans-serif">${esc(val)}</td>` +
-        `</tr>`,
-    )
-    .join("");
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${CARD};border:1px solid ${LINE};border-radius:6px;border-collapse:separate">${body}</table>`;
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -209,44 +160,6 @@ function bookingIcs(opts: {
   ].join("\r\n");
 }
 
-function shell(opts: { heading: string; lead: string; rowsHtml: string; aside: string; es: boolean }) {
-  const tagline = opts.es ? "Cocina mediterránea al fuego · Ibiza" : "Mediterranean fire cooking · Ibiza";
-  const hours = opts.es ? "Cada día excepto miércoles · 19:30 – 23:30" : "Every day except Wednesday · 19:30 – 23:30";
-  const ig = INSTAGRAM.replace("https://instagram.com/", "@");
-  return `<!doctype html><html><body style="margin:0;padding:0;background:${PAPER}">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${PAPER}">
-    <tr><td align="center" style="padding:28px 14px">
-      <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%">
-        <!-- Header -->
-        <tr><td style="background:${INK};padding:30px 32px 22px;text-align:center;border-radius:6px 6px 0 0">
-          <img src="${LOGO}" alt="${BRAND}" width="138" style="display:inline-block;width:138px;height:auto;border:0">
-          <div style="margin-top:12px;color:#E9E1D1;font:700 11px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.16em;text-transform:uppercase">${esc(tagline)}</div>
-        </td></tr>
-        <!-- Body -->
-        <tr><td style="background:${WHITE};padding:34px 32px;border-left:1px solid ${LINE};border-right:1px solid ${LINE}">
-          <h1 style="margin:0 0 14px;color:${INK};font:700 22px/1.3 Arial,Helvetica,sans-serif">${esc(opts.heading)}</h1>
-          <p style="margin:0 0 24px;color:${SOFT};font:15px/1.7 Arial,sans-serif">${opts.lead}</p>
-          ${opts.rowsHtml}
-          <p style="margin:22px 0 0;color:${SOFT};font:14px/1.7 Arial,sans-serif">${opts.aside}</p>
-        </td></tr>
-        <!-- Footer (light, high-contrast) -->
-        <tr><td style="background:${CARD};padding:22px 32px;border:1px solid ${LINE};border-top:1px solid ${LINE};border-radius:0 0 6px 6px">
-          <p style="margin:0 0 6px;color:${INK};font:700 12px/1.5 Arial,sans-serif;letter-spacing:.04em">${esc(BRAND)}</p>
-          <p style="margin:0;color:${SOFT};font:12px/1.85 Arial,sans-serif">
-            <a href="${MAPS_URL}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(ADDRESS)}</a><br>
-            ${esc(hours)}<br>
-            <a href="tel:${PHONE.replace(/\s/g, "")}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(PHONE)}</a>
-            &nbsp;·&nbsp;
-            <a href="${INSTAGRAM}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(ig)}</a>
-            &nbsp;·&nbsp;
-            <a href="mailto:${EMAIL}" style="color:${INK};text-decoration:none;font-weight:bold">${esc(EMAIL)}</a>
-          </p>
-        </td></tr>
-      </table>
-    </td></tr>
-  </table></body></html>`;
-}
-
 export async function POST(request: Request) {
   let d: Payload;
   try {
@@ -262,34 +175,54 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "captcha" }, { status: 400 });
   }
 
-  const user = process.env.ZOHO_USER;
-  const pass = process.env.ZOHO_PASS;
-  if (!user || !pass) return Response.json({ ok: false, error: "not_configured" }, { status: 503 });
-
-  const host = process.env.ZOHO_HOST || "smtppro.zoho.eu";
   const es = d.lang !== "en";
   const v = (s?: string) => (s && s.trim()) || "—";
   const name = v(d.name);
   const email = (d.email || "").trim();
   const phone = normalizePhone(v(d.phone));
 
-  const rows: [string, string][] = es
-    ? [["Nombre", name], ["Correo", v(d.email)], ["Teléfono", phone], ["Día", v(d.date)], ["Hora", v(d.time)], ["Personas", v(d.guests)], ["Mensaje", v(d.message)]]
-    : [["Name", name], ["Email", v(d.email)], ["Phone", phone], ["Date", v(d.date)], ["Time", v(d.time)], ["Guests", v(d.guests)], ["Message", v(d.message)]];
+  // Save to the dashboard's own store first — so a booking is never lost to
+  // a spam folder or a broken SMTP send. Best-effort: never blocks or fails
+  // the booking response.
+  try {
+    await addReservation({
+      name,
+      email: v(d.email),
+      phone,
+      date: v(d.date),
+      time: v(d.time),
+      guests: v(d.guests),
+      message: v(d.message),
+      lang: es ? "es" : "en",
+    });
+  } catch (err) {
+    console.error("Failed to persist reservation:", err);
+  }
+
+  const smtp = createTransporter();
+  if (!smtp) return Response.json({ ok: false, error: "not_configured" }, { status: 503 });
+  const { transporter, user } = smtp;
+
+  const booking = {
+    name,
+    email: v(d.email),
+    phone,
+    date: v(d.date),
+    time: v(d.time),
+    guests: v(d.guests),
+    message: v(d.message),
+  };
+
+  // Internal notification keeps the raw ISO date so the mail stays
+  // machine-parseable (the dashboard's backfill importer reads these).
+  const rows = bookingRows(booking, es);
   const rowsHtml = detailsTable(rows);
   const tableText = rows.map(([k, val]) => `${k}: ${val}`).join("\n");
 
-  const transporter = nodemailer.createTransport({
-    host,
-    port: 465,
-    secure: true,
-    auth: { user, pass },
-    pool: true, // reuse one connection for both emails (faster, fewer handshakes)
-    maxConnections: 1,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 20000,
-  });
+  // The guest gets the date spelled out instead.
+  const customerRows = bookingRows({ ...booking, date: formatBookingDate(booking.date, es) }, es);
+  const customerRowsHtml = detailsTable(customerRows);
+  const customerTableText = customerRows.map(([k, val]) => `${k}: ${val}`).join("\n");
 
   try {
     // 1) Notification to the restaurant — reply-to the customer.
@@ -349,12 +282,12 @@ export async function POST(request: Request) {
           to: email,
           replyTo: user,
           subject: es ? `Hemos recibido tu reserva · ${BRAND}` : `We've received your booking · ${BRAND}`,
-          text: `${es ? `Hola ${name},` : `Hi ${name},`}\n\n${lead}\n\n${es ? "Tu solicitud" : "Your request"}:\n${tableText}\n\n📍 ${directionsLabel}: ${MAPS_URL}\n\n${aside}\n\n${BRAND} · Ibiza`,
+          text: `${es ? `Hola ${name},` : `Hi ${name},`}\n\n${lead}\n\n${es ? "Tu solicitud" : "Your request"}:\n${customerTableText}\n\n📍 ${directionsLabel}: ${MAPS_URL}\n\n${aside}\n\n${BRAND} · Ibiza`,
           html: shell({
             es,
             heading: es ? `Hola ${name},` : `Hi ${name},`,
             lead,
-            rowsHtml,
+            rowsHtml: customerRowsHtml,
             aside: asideHtml,
           }),
         }, 2);

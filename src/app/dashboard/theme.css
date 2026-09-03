@@ -1,0 +1,112 @@
+/* shadcn/ui theme tokens, scoped to the dashboard's own HTML document (this
+   file is only imported by src/app/dashboard/layout.tsx, which has its own
+   <html>/<body> separate from the public site's). Reuses the brand colors
+   already on :root from ../globals.css (--paper, --ink, etc.) for light
+   mode, so the panel stays on-brand; adds a real dark mode on top for
+   low-light service use — toggled via a `.dark` class on <html>. */
+
+:root {
+  --dash-bg: var(--paper);
+  --dash-fg: var(--ink);
+  --dash-card: var(--white);
+  --dash-card-fg: var(--ink);
+  --dash-popover: var(--white);
+  --dash-popover-fg: var(--ink);
+  --dash-primary: var(--ink);
+  --dash-primary-fg: var(--white);
+  --dash-secondary: var(--paper-2);
+  --dash-secondary-fg: var(--ink);
+  --dash-muted: var(--paper-2);
+  --dash-muted-fg: var(--muted);
+  --dash-accent: var(--paper-2);
+  --dash-accent-fg: var(--ink);
+  --dash-destructive: #a23;
+  --dash-destructive-fg: var(--white);
+  --dash-border: var(--line);
+  --dash-input: var(--line);
+  --dash-ring: var(--ink);
+  --dash-radius: 0.75rem;
+
+  --dash-pending-bg: #efd9a6;
+  --dash-pending-fg: #6b4e14;
+  --dash-accepted-bg: #cfe0cb;
+  --dash-accepted-fg: #2f5230;
+  --dash-rejected-bg: #e7d2ce;
+  --dash-rejected-fg: #7a2e23;
+
+  /* Accent numbers inside the "Informe de hoy" card. That card is painted with
+     --dash-primary, which INVERTS between themes (dark ink in light mode, cream
+     in dark mode) — so these have to invert too or they vanish into it. */
+  --dash-stat-pending: #efd9a6;
+  --dash-stat-accepted: #b9d4b4;
+}
+
+.dark {
+  --dash-bg: #14120f;
+  --dash-fg: #ece5d6;
+  --dash-card: #1d1a16;
+  --dash-card-fg: #ece5d6;
+  --dash-popover: #1d1a16;
+  --dash-popover-fg: #ece5d6;
+  --dash-primary: #ece5d6;
+  --dash-primary-fg: #14120f;
+  --dash-secondary: #262219;
+  --dash-secondary-fg: #ece5d6;
+  --dash-muted: #262219;
+  --dash-muted-fg: #a79e8e;
+  --dash-accent: #262219;
+  --dash-accent-fg: #ece5d6;
+  --dash-destructive: #e17a6b;
+  --dash-destructive-fg: #1d1a16;
+  --dash-border: rgba(236, 229, 214, 0.14);
+  --dash-input: rgba(236, 229, 214, 0.14);
+  --dash-ring: #ece5d6;
+
+  --dash-pending-bg: #4a3a16;
+  --dash-pending-fg: #f0d9a0;
+  --dash-accepted-bg: #2c3f2a;
+  --dash-accepted-fg: #bfe0b8;
+  --dash-rejected-bg: #452420;
+  --dash-rejected-fg: #efc3ba;
+
+  /* Dark mode paints the informe card cream, so these go dark to stay legible. */
+  --dash-stat-pending: #6b4e14;
+  --dash-stat-accepted: #2f5230;
+}
+
+@theme inline {
+  --color-background: var(--dash-bg);
+  --color-foreground: var(--dash-fg);
+  --color-card: var(--dash-card);
+  --color-card-foreground: var(--dash-card-fg);
+  --color-popover: var(--dash-popover);
+  --color-popover-foreground: var(--dash-popover-fg);
+  --color-primary: var(--dash-primary);
+  --color-primary-foreground: var(--dash-primary-fg);
+  --color-secondary: var(--dash-secondary);
+  --color-secondary-foreground: var(--dash-secondary-fg);
+  --color-muted: var(--dash-muted);
+  --color-muted-foreground: var(--dash-muted-fg);
+  --color-accent: var(--dash-accent);
+  --color-accent-foreground: var(--dash-accent-fg);
+  --color-destructive: var(--dash-destructive);
+  --color-destructive-foreground: var(--dash-destructive-fg);
+  --color-border: var(--dash-border);
+  --color-input: var(--dash-input);
+  --color-ring: var(--dash-ring);
+  --color-pending: var(--dash-pending-bg);
+  --color-pending-foreground: var(--dash-pending-fg);
+  --color-accepted: var(--dash-accepted-bg);
+  --color-accepted-foreground: var(--dash-accepted-fg);
+  --color-rejected: var(--dash-rejected-bg);
+  --color-rejected-foreground: var(--dash-rejected-fg);
+  --radius-lg: var(--dash-radius);
+  --radius-md: calc(var(--dash-radius) - 4px);
+  --radius-sm: calc(var(--dash-radius) - 8px);
+}
+
+body {
+  background: var(--dash-bg);
+  color: var(--dash-fg);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}

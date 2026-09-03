@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { dashboardUnauthorizedResponse, isDashboardAuthorized } from "@/lib/dashboardAuth";
 
-// Next 16 renamed `middleware` → `proxy`. This runs before routes render and
-// sends locale-less URLs (e.g. "/" or "/carta") to the right language prefix so
-// every page lives under an indexable /es or /en path.
+// Next 16 renamed `middleware` → `proxy`. Only one proxy.ts is allowed per
+// project, so this file does two unrelated jobs:
+//   1) Locale routing — send locale-less URLs (e.g. "/" or "/carta") to the
+//      right language prefix so every public page lives under an indexable
+//      /es or /en path.
+//   2) Basic Auth on the internal /dashboard reservations panel (shows
+//      customer PII, must not be public). See src/lib/dashboardAuth.ts — the
+//      same check also runs inside each /api/dashboard/* route handler as
+//      defense in depth (a known Next/Turbopack proxy-auth-bypass CVE means
+//      this file alone isn't a guaranteed gate).
 const LOCALES = ["es", "en"] as const;
 const DEFAULT_LOCALE = "es";
 
@@ -17,6 +25,10 @@ function detectLocale(request: NextRequest): string {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (pathname === "/dashboard" || pathname.startsWith("/dashboard/") || pathname.startsWith("/api/dashboard")) {
+    return isDashboardAuthorized(request) ? NextResponse.next() : dashboardUnauthorizedResponse();
+  }
+
   const hasLocale = LOCALES.some(
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
   );
@@ -29,7 +41,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip Next internals, the API, and anything with a file extension
-  // (sitemap.xml, robots.txt, og.jpg, icons, /images, /fonts, …).
-  matcher: ["/((?!_next|api|.*\\..*).*)"],
+  // Skip Next internals and anything with a file extension for the locale
+  // redirect; /api is excluded too except /api/dashboard, re-added below so
+  // its Basic Auth check still runs (other /api/* routes must never be
+  // locale-redirected).
+  matcher: ["/((?!_next|api|.*\\..*).*)", "/api/dashboard/:path*"],
 };

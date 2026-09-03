@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local reservation store (dashboard prototype) — has customer PII, never commit
+/.data
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

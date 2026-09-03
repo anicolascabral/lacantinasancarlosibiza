@@ -1,4 +1,11 @@
 @import "tailwindcss";
+/* Dashboard-only theme tokens (shadcn-style @theme block). Must be a CSS
+   @import, not a JS import in layout.tsx — Tailwind v4 only picks up @theme
+   customizations from files reachable through its own CSS import graph, not
+   ones loaded as a separate stylesheet asset. Safe to share: it only adds
+   inert `--dash-*` variables and unused utility classes to the public site's
+   build, since public pages never reference them or toggle `.dark`. */
+@import "./dashboard/theme.css";
 
 /* Display — Clash Display (self-hosted) */
 @font-face {
