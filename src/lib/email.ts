@@ -181,7 +181,7 @@ export function bookingRows(
       ];
 }
 
-export type ConfirmationTarget = {
+export type BookingMailTarget = {
   name: string;
   email: string;
   phone: string;
@@ -201,7 +201,7 @@ export type ConfirmationTarget = {
  * Throws on failure so the caller can tell staff the mail didn't go out (the
  * booking's status change must still stick either way).
  */
-export async function sendConfirmationEmail(r: ConfirmationTarget): Promise<void> {
+export async function sendConfirmationEmail(r: BookingMailTarget): Promise<void> {
   const smtp = createTransporter();
   if (!smtp) throw new Error("not_configured");
   const { transporter, user } = smtp;
@@ -239,6 +239,59 @@ export async function sendConfirmationEmail(r: ConfirmationTarget): Promise<void
           lead,
           rowsHtml,
           aside: asideHtml,
+        }),
+      },
+      2,
+    );
+  } finally {
+    transporter.close();
+  }
+}
+
+/**
+ * "We can't confirm your booking" — only sent when staff explicitly choose
+ * "Rechazar y avisar" in the dashboard. Turning someone down is delicate and
+ * often already handled by phone, so rejecting never mails on its own.
+ *
+ * Deliberately warm, and points the guest at the phone so there's a way back:
+ * a full house tonight shouldn't read as "don't come here again".
+ *
+ * Throws on failure so the caller can tell staff it didn't go out.
+ */
+export async function sendRejectionEmail(r: BookingMailTarget): Promise<void> {
+  const smtp = createTransporter();
+  if (!smtp) throw new Error("not_configured");
+  const { transporter, user } = smtp;
+
+  const es = r.lang !== "en";
+  const rows = bookingRows({ ...r, date: formatBookingDate(r.date, es) }, es);
+  const rowsHtml = detailsTable(rows);
+  const tableText = rows.map(([k, val]) => `${k}: ${val}`).join("\n");
+
+  const leadText = es
+    ? `Gracias por querer venir a ${BRAND} Ibiza. Lamentablemente no podemos confirmarte esta reserva — nos hemos quedado sin mesa para ese día y hora.`
+    : `Thank you for wanting to visit ${BRAND} Ibiza. Sadly we can't confirm this booking — we've run out of tables for that day and time.`;
+  const asideText = es
+    ? `Si te sirve otro día u otro horario, llámanos al ${PHONE} o responde a este correo y lo vemos encantados. Nos encantaría recibirte.`
+    : `If another day or time works for you, call us on ${PHONE} or just reply to this email and we'll gladly sort it out. We'd love to have you.`;
+
+  try {
+    await sendWithRetry(
+      transporter,
+      {
+        from: `"${BRAND}" <${user}>`,
+        to: r.email,
+        replyTo: user,
+        subject: es ? `Sobre tu reserva · ${BRAND}` : `About your booking · ${BRAND}`,
+        text:
+          `${es ? `Hola ${r.name},` : `Hi ${r.name},`}\n\n${leadText}\n\n` +
+          `${es ? "Tu solicitud" : "Your request"}:\n${tableText}\n\n${asideText}\n\n${BRAND} · Ibiza`,
+        html: shell({
+          es,
+          heading: es ? `Hola ${r.name},` : `Hi ${r.name},`,
+          lead: esc(leadText),
+          rowsHtml,
+          aside: `📞 ${esc(asideText)}`,
         }),
       },
       2,

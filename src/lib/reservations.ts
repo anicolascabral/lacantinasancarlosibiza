@@ -34,6 +34,9 @@ export type Reservation = {
   // Set once the "your booking is confirmed" mail actually went out, so
   // accepting again (or after an undo) never re-mails the customer.
   confirmationSentAt?: string; // ISO timestamp
+  // Same idea for the "we can't confirm your booking" mail, which only goes
+  // out when staff pick "Rechazar y avisar".
+  rejectionSentAt?: string; // ISO timestamp
   // Calendar UID for bookings backfilled from the Zoho Calendar export, so
   // re-running the importer never creates duplicates.
   sourceUid?: string;
@@ -137,11 +140,30 @@ export async function updateReservationStatus(
   return list[idx];
 }
 
-export async function markConfirmationSent(id: string): Promise<Reservation | null> {
+export async function getReservation(id: string): Promise<Reservation | null> {
+  const list = await readAll();
+  return list.find((r) => r.id === id) ?? null;
+}
+
+/** Permanent — used for test entries and duplicates. No undo. */
+export async function deleteReservation(id: string): Promise<Reservation | null> {
   const list = await readAll();
   const idx = list.findIndex((r) => r.id === id);
   if (idx === -1) return null;
-  list[idx] = { ...list[idx], confirmationSentAt: new Date().toISOString() };
+  const [removed] = list.splice(idx, 1);
+  await writeAll(list);
+  return removed;
+}
+
+export async function markGuestMailSent(
+  id: string,
+  kind: "confirmation" | "rejection",
+): Promise<Reservation | null> {
+  const list = await readAll();
+  const idx = list.findIndex((r) => r.id === id);
+  if (idx === -1) return null;
+  const field = kind === "confirmation" ? "confirmationSentAt" : "rejectionSentAt";
+  list[idx] = { ...list[idx], [field]: new Date().toISOString() };
   await writeAll(list);
   return list[idx];
 }

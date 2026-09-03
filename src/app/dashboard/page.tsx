@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import {
   Calendar,
+  CalendarCheck,
+  CalendarX,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -10,6 +12,7 @@ import {
   Mail,
   MailCheck,
   MailWarning,
+  MailX,
   Moon,
   MoreVertical,
   Phone,
@@ -17,6 +20,7 @@ import {
   RotateCcw,
   Search,
   Sun,
+  Trash2,
   Users,
   X,
 } from "lucide-react";
@@ -29,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const REFRESH_MS = 20000;
 
@@ -101,6 +106,8 @@ function weatherEmoji(code: number): string {
   return "🌡️";
 }
 
+const guestHasEmail = (r: Reservation) => !!r.email && r.email !== "—" && r.email.includes("@");
+
 function matchesSearch(r: Reservation, q: string): boolean {
   if (!q.trim()) return true;
   const needle = q.trim().toLowerCase();
@@ -134,14 +141,18 @@ function ReservationCard({
   compact,
   onAccept,
   onReject,
+  onRejectAndNotify,
   onUndo,
+  onDelete,
 }: {
   r: Reservation;
   busy: boolean;
   compact?: boolean;
   onAccept: () => void;
   onReject: () => void;
+  onRejectAndNotify: () => void;
   onUndo: () => void;
+  onDelete: () => void;
 }) {
   return (
     <article className="rounded-xl border border-border bg-card p-4">
@@ -201,32 +212,48 @@ function ReservationCard({
         </p>
       )}
 
-      {r.status === "pending" ? (
+      {!compact && (
         <div className="flex items-center gap-2">
-          <Button disabled={busy} onClick={onAccept} className="flex-1">
-            <Check size={16} /> Aceptar
-          </Button>
-          {!compact && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button disabled={busy} variant="outline" size="icon" aria-label="Más opciones">
-                  <MoreVertical size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onReject} className="text-destructive">
-                  <X size={14} /> Rechazar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          {r.status === "pending" ? (
+            <Button disabled={busy} onClick={onAccept} className="flex-1">
+              <Check size={16} /> Aceptar
+            </Button>
+          ) : (
+            <Button disabled={busy} onClick={onUndo} variant="ghost" size="sm" className="flex-1 justify-start px-0">
+              <RotateCcw size={13} /> Deshacer
+            </Button>
           )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button disabled={busy} variant="outline" size="icon" aria-label="Más opciones">
+                <MoreVertical size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {r.status === "pending" && (
+                <>
+                  <DropdownMenuItem onClick={onReject} className="text-destructive">
+                    <X size={14} /> Rechazar
+                  </DropdownMenuItem>
+                  {/* Explicit second action: rejecting on its own never mails
+                      the guest, since it's often settled by phone already. */}
+                  <DropdownMenuItem onClick={onRejectAndNotify} className="text-destructive">
+                    <MailX size={14} /> Rechazar y avisar
+                  </DropdownMenuItem>
+                </>
+              )}
+              <DropdownMenuItem onClick={onDelete} className="text-destructive">
+                <Trash2 size={14} /> Eliminar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      ) : (
-        !compact && (
-          <Button disabled={busy} onClick={onUndo} variant="ghost" size="sm" className="px-0">
-            <RotateCcw size={13} /> Deshacer
-          </Button>
-        )
+      )}
+
+      {compact && r.status === "pending" && (
+        <Button disabled={busy} onClick={onAccept} className="w-full">
+          <Check size={16} /> Aceptar
+        </Button>
       )}
     </article>
   );
@@ -247,6 +274,13 @@ export default function DashboardPage() {
   const [weather, setWeather] = useState<Record<string, DayWeather> | null>(null);
   const [closedDates, setClosedDates] = useState<string[] | null>(null);
   const [closureBusy, setClosureBusy] = useState(false);
+  // Delete flow: two confirmations in one window (step 1 = what will happen,
+  // step 2 = the irreversible bit), because deleting has no undo.
+  const [toDelete, setToDelete] = useState<Reservation | null>(null);
+  const [deleteStep, setDeleteStep] = useState<1 | 2>(1);
+  const [notifyOnDelete, setNotifyOnDelete] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const [toClose, setToClose] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(
@@ -357,14 +391,14 @@ export default function DashboardPage() {
     return () => clearInterval(id);
   }, []);
 
-  async function setStatus(id: string, status: ReservationStatus) {
+  async function setStatus(id: string, status: ReservationStatus, notify = false) {
     setPendingIds((s) => new Set(s).add(id));
     setNotice("");
     try {
       const res = await fetch(`/api/dashboard/reservas/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, notify }),
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -372,16 +406,17 @@ export default function DashboardPage() {
 
       // Accepting mails the customer — tell staff exactly what happened, since
       // a silent failure would leave the guest never hearing back.
-      if (status === "accepted") {
+      if (status === "accepted" || (status === "rejected" && notify)) {
         const to = data.reservation?.email;
+        const hecho = status === "accepted" ? "Confirmada" : "Rechazada";
         if (data.emailSent) {
-          setNotice(`Confirmación enviada a ${to}.`);
+          setNotice(`${hecho}. Correo enviado a ${to}.`);
         } else if (data.emailError === "no_email") {
-          setNotice("Confirmada. No dejó correo — avisale por teléfono.");
+          setNotice(`${hecho}. No dejó correo — avisale por teléfono.`);
         } else if (data.emailError === "already_sent") {
-          setNotice("Confirmada. Ya se le había enviado la confirmación antes.");
+          setNotice(`${hecho}. Ya se le había avisado por correo antes.`);
         } else {
-          setError("Confirmada, pero NO se pudo enviar el correo. Avisale por teléfono.");
+          setError(`${hecho}, pero NO se pudo enviar el correo. Avisale por teléfono.`);
         }
       }
     } catch {
@@ -392,6 +427,60 @@ export default function DashboardPage() {
         next.delete(id);
         return next;
       });
+    }
+  }
+
+  async function confirmClosure() {
+    const date = toClose;
+    if (!date) return;
+    await toggleClosure(date);
+    setToClose(null);
+    setNotice(`Cerrado el ${formatDate(date)}. La web ya no acepta reservas para ese día.`);
+  }
+
+  function askDelete(r: Reservation) {
+    setToDelete(r);
+    setDeleteStep(1);
+    // Notifying is the common case (a real booking falling through); it gets
+    // unticked for test rows and duplicates, where mailing the guest would
+    // only confuse them.
+    setNotifyOnDelete(guestHasEmail(r));
+    setError("");
+    setNotice("");
+  }
+
+  async function confirmDelete() {
+    const r = toDelete;
+    if (!r) return;
+    setDeleting(true);
+    setError("");
+    try {
+      const notify = notifyOnDelete && guestHasEmail(r);
+      const res = await fetch(`/api/dashboard/reservas/${r.id}${notify ? "?notify=1" : ""}`, {
+        method: "DELETE",
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        // The server refuses to delete when a requested mail failed, so the
+        // booking is still there to retry or handle by phone.
+        setError(
+          data?.error === "email_failed"
+            ? "No se pudo enviar el correo, así que NO se eliminó nada. Llamá al cliente y volvé a intentar."
+            : "No se pudo eliminar esa reserva. Probá de nuevo.",
+        );
+        return;
+      }
+      setReservations((list) => list?.filter((x) => x.id !== r.id) ?? list);
+      setNotice(
+        data?.emailSent
+          ? `Reserva de ${r.name} eliminada y avisada por correo. Llamalo igual al ${r.phone} para explicarle.`
+          : `Reserva de ${r.name} eliminada.${notify ? " No se le pudo avisar por correo." : ""}`,
+      );
+      setToDelete(null);
+    } catch {
+      setError("No se pudo eliminar esa reserva. Probá de nuevo.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -457,7 +546,7 @@ export default function DashboardPage() {
                   <Plus size={14} /> Agregar
                 </Button>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent fullScreen>
                 <SheetHeader>
                   <SheetTitle>Agregar reserva</SheetTitle>
                 </SheetHeader>
@@ -591,12 +680,26 @@ export default function DashboardPage() {
                     className="flex flex-col items-center justify-center font-body rounded-lg"
                     style={{
                       aspectRatio: "1",
-                      background: isSelected ? "var(--dash-primary)" : isClosed ? "rgba(162,34,51,0.12)" : "transparent",
-                      color: isSelected ? "var(--dash-primary-fg)" : isClosed ? "var(--dash-destructive)" : "var(--dash-fg)",
+                      // A closed day has to read as closed even while it's the
+                      // selected one — that's the moment right after you close it.
+                      background: isClosed
+                        ? isSelected
+                          ? "var(--dash-destructive)"
+                          : "rgba(162,34,51,0.12)"
+                        : isSelected
+                          ? "var(--dash-primary)"
+                          : "transparent",
+                      color: isClosed
+                        ? isSelected
+                          ? "var(--dash-destructive-fg)"
+                          : "var(--dash-destructive)"
+                        : isSelected
+                          ? "var(--dash-primary-fg)"
+                          : "var(--dash-fg)",
                       border: isToday && !isSelected ? "1px solid var(--dash-fg)" : "1px solid transparent",
                       fontSize: "0.8rem",
                       fontWeight: isToday ? 700 : 500,
-                      textDecoration: isClosed && !isSelected ? "line-through" : "none",
+                      textDecoration: isClosed ? "line-through" : "none",
                     }}
                   >
                     {cell.day}
@@ -634,25 +737,42 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <button
-                  onClick={() => toggleClosure(selectedDate)}
+              <button
+                onClick={() => setSelectedDate(null)}
+                className="flex items-center gap-1 font-body text-sm text-muted-foreground flex-shrink-0"
+              >
+                <X size={13} /> Ver todas
+              </button>
+            </div>
+          ) : null}
+
+          {/* Cerrar reservas de un día: acción de peso, así que va en su propio
+              botón a lo ancho (antes era un enlace chico al lado de otro, muy
+              fácil de tocar por error) y pasa por una confirmación. */}
+          {selectedDate ? (
+            <div className="mb-4">
+              {closedDates?.includes(selectedDate) ? (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
                   disabled={closureBusy}
-                  className="font-body text-sm font-semibold"
-                  style={{
-                    color: closedDates?.includes(selectedDate) ? "var(--dash-accepted-fg)" : "var(--dash-destructive)",
-                    opacity: closureBusy ? 0.6 : 1,
-                  }}
+                  onClick={() => toggleClosure(selectedDate)}
                 >
-                  {closedDates?.includes(selectedDate) ? "Reabrir día" : "Cerrar día"}
-                </button>
-                <button
-                  onClick={() => setSelectedDate(null)}
-                  className="flex items-center gap-1 font-body text-sm text-muted-foreground"
+                  <CalendarCheck size={16} /> Reabrir reservas de este día
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
+                  disabled={closureBusy}
+                  onClick={() => setToClose(selectedDate)}
+                  style={{ color: "var(--dash-destructive)", borderColor: "var(--dash-destructive)" }}
                 >
-                  <X size={13} /> Ver todas
-                </button>
-              </div>
+                  <CalendarX size={16} /> Cerrar reservas de este día
+                </Button>
+              )}
             </div>
           ) : (
             <div className="flex items-center gap-2 mb-4">
@@ -693,7 +813,9 @@ export default function DashboardPage() {
                 busy={pendingIds.has(r.id)}
                 onAccept={() => setStatus(r.id, "accepted")}
                 onReject={() => setStatus(r.id, "rejected")}
+                onRejectAndNotify={() => setStatus(r.id, "rejected", true)}
                 onUndo={() => setStatus(r.id, "pending")}
+                onDelete={() => askDelete(r)}
               />
             ))}
           </div>
@@ -749,12 +871,119 @@ export default function DashboardPage() {
                 compact
                 onAccept={() => setStatus(r.id, "accepted")}
                 onReject={() => setStatus(r.id, "rejected")}
+                onRejectAndNotify={() => setStatus(r.id, "rejected", true)}
                 onUndo={() => setStatus(r.id, "pending")}
+                onDelete={() => askDelete(r)}
               />
             ))}
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Cerrar reservas de un día */}
+      <Dialog open={!!toClose} onOpenChange={(open) => !open && setToClose(null)}>
+        <DialogContent>
+          {toClose && (
+            <>
+              <DialogTitle>¿Cerrar las reservas de este día?</DialogTitle>
+              <DialogDescription>
+                {formatDate(toClose)}
+                {countsByDate[toClose] ? ` · ya hay ${countsByDate[toClose].total} reserva(s) ese día` : ""}
+              </DialogDescription>
+              <p className="mt-3 font-body text-sm" style={{ color: "var(--dash-fg)" }}>
+                La web va a dejar de aceptar reservas para ese día: quien lo elija va a ver un aviso
+                pidiéndole que llame o escriba.
+              </p>
+              {countsByDate[toClose]?.total ? (
+                <p
+                  className="mt-3 font-body text-sm rounded-md px-3 py-2"
+                  style={{ background: "var(--dash-pending-bg)", color: "var(--dash-pending-fg)" }}
+                >
+                  Ojo: las {countsByDate[toClose].total} reserva(s) que ya tenés para ese día no se cancelan
+                  ni se avisa a nadie. Si el día no se abre, avisales vos.
+                </p>
+              ) : null}
+              <div className="flex gap-2 mt-5">
+                <Button variant="outline" className="flex-1" disabled={closureBusy} onClick={() => setToClose(null)}>
+                  No, dejarlo abierto
+                </Button>
+                <Button variant="destructive" className="flex-1" disabled={closureBusy} onClick={confirmClosure}>
+                  {closureBusy ? "Cerrando…" : "Sí, cerrar"}
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Eliminar: dos confirmaciones, porque no hay Deshacer */}
+      <Dialog open={!!toDelete} onOpenChange={(open) => !open && setToDelete(null)}>
+        <DialogContent>
+          {toDelete && deleteStep === 1 && (
+            <>
+              <DialogTitle>Eliminar reserva</DialogTitle>
+              <DialogDescription>
+                {toDelete.name} · {formatDate(toDelete.date)} · {toDelete.time} · {toDelete.guests} pers.
+              </DialogDescription>
+
+              {guestHasEmail(toDelete) ? (
+                <label className="flex items-start gap-2 mt-4 font-body text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={notifyOnDelete}
+                    onChange={(e) => setNotifyOnDelete(e.target.checked)}
+                    className="mt-0.5 shrink-0"
+                  />
+                  <span style={{ color: "var(--dash-fg)" }}>
+                    Avisar al cliente por correo que su reserva queda cancelada
+                    <span className="block text-xs text-muted-foreground">
+                      Destildá esto si es una prueba o un duplicado — no conviene avisarle a alguien que sí tiene mesa.
+                    </span>
+                  </span>
+                </label>
+              ) : (
+                <p className="mt-4 font-body text-xs text-muted-foreground">
+                  Esta reserva no tiene correo, así que no se le puede avisar por mail. Llamalo al {toDelete.phone}.
+                </p>
+              )}
+
+              <div className="flex gap-2 mt-5">
+                <Button variant="outline" className="flex-1" onClick={() => setToDelete(null)}>
+                  Cancelar
+                </Button>
+                <Button variant="destructive" className="flex-1" onClick={() => setDeleteStep(2)}>
+                  Continuar
+                </Button>
+              </div>
+            </>
+          )}
+
+          {toDelete && deleteStep === 2 && (
+            <>
+              <DialogTitle>¿Seguro? Esto no se puede deshacer</DialogTitle>
+              <DialogDescription>
+                Se va a borrar la reserva de <strong>{toDelete.name}</strong> definitivamente
+                {notifyOnDelete && guestHasEmail(toDelete)
+                  ? ", y se le va a enviar un correo avisándole que queda cancelada."
+                  : ", sin avisarle nada al cliente."}
+              </DialogDescription>
+              {notifyOnDelete && guestHasEmail(toDelete) && (
+                <p className="mt-3 font-body text-sm rounded-md px-3 py-2" style={{ background: "var(--dash-pending-bg)", color: "var(--dash-pending-fg)" }}>
+                  Después llamalo al {toDelete.phone} y explicale — un correo solo puede quedar frío.
+                </p>
+              )}
+              <div className="flex gap-2 mt-5">
+                <Button variant="outline" className="flex-1" disabled={deleting} onClick={() => setDeleteStep(1)}>
+                  Volver
+                </Button>
+                <Button variant="destructive" className="flex-1" disabled={deleting} onClick={confirmDelete}>
+                  {deleting ? "Eliminando…" : "Sí, eliminar"}
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

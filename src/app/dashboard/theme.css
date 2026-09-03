@@ -17,7 +17,10 @@
   --dash-secondary: var(--paper-2);
   --dash-secondary-fg: var(--ink);
   --dash-muted: var(--paper-2);
-  --dash-muted-fg: var(--muted);
+  /* NOT the brand's --muted (#8C857A): that only reaches 3.47:1 on the card
+     background, under the 4.5:1 needed for body text. Darkened to 5.3:1 while
+     staying visibly secondary. */
+  --dash-muted-fg: #6e675d;
   --dash-accent: var(--paper-2);
   --dash-accent-fg: var(--ink);
   --dash-destructive: #a23;
@@ -103,6 +106,14 @@
   --radius-lg: var(--dash-radius);
   --radius-md: calc(var(--dash-radius) - 4px);
   --radius-sm: calc(var(--dash-radius) - 8px);
+}
+
+/* Native checkboxes render system-blue at ~13px, off-palette and hard to hit.
+   accent-color themes them without losing the platform behaviour. */
+input[type="checkbox"] {
+  accent-color: var(--dash-primary);
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 body {

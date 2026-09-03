@@ -11,6 +11,9 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: "#181613",
+  // Shrink the layout viewport when the on-screen keyboard opens, so
+  // bottom-anchored panels ride above it instead of being buried under it.
+  interactiveWidget: "resizes-content",
 };
 
 // Applies the saved theme before first paint so there's no light→dark flash.
